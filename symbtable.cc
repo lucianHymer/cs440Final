@@ -1,8 +1,23 @@
 #include <string>
 #include <list>
 #include "symbtable.h"
+#include "stdio.h"
 
 using namespace std;
+
+ArgumentChecker::ArgumentChecker(std::string name, std::vector<type_t> arg_types_list){
+  fun_name = name;
+  arg_types = arg_types_list;
+  num_args = arg_types.size();
+}
+
+ArgumentChecker::ArgumentChecker(){
+}
+
+bool ArgumentChecker::check_args(std::vector<type_t> given_arg_types){
+  if(given_arg_types.size() != arg_types.size())
+    throw WrongNumberArguments(fun_name, arg_types.size(), given_arg_types.size());
+}
 
 Symbol::Symbol()
 	: nam(), typ(TY_BAD)
@@ -10,6 +25,10 @@ Symbol::Symbol()
 
 Symbol::Symbol(const string &name, type_t type, int address)
 	: nam(name), typ(type), addr(address)
+{}
+
+Symbol::Symbol(const string &name, ArgumentChecker arg_checker, int address)
+	: nam(name), checkr(arg_checker), addr(address), typ(TY_FUNC)
 {}
 
 const string &Symbol::name() const

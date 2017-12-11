@@ -72,7 +72,11 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 	add(I_ENDPPROC);
 	add(1);
 
-	fvsyms.insert(Symbol("putn", TY_FUNC, pos()));
+	//fvsyms.insert(Symbol("putn", TY_FUNC, pos()));
+  std::vector<type_t> type_list;
+  type_list.push_back(TY_INT);
+  ArgumentChecker putn_checker("putn", type_list);
+	fvsyms.insert(Symbol("putn", putn_checker, pos()));
 	add(I_VARIABLE);
 	add(0);
 	add(-1);
@@ -84,7 +88,9 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 
 
   // getnum() function added (11/28) 
-  fvsyms.insert(Symbol("getnum", TY_FUNC, pos()));
+  type_list.clear();
+  ArgumentChecker getnum_checker("getnum", type_list);
+  fvsyms.insert(Symbol("getnum", getnum_checker, pos()));
   add(I_VARIABLE);
   add(0);
   add(-1);

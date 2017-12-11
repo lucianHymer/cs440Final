@@ -56,7 +56,7 @@ void CodeGen::visitFun(Fun *fun)
     if (symbols.exists(fun_name))
         throw Redeclared(fun_name);
 
-    symbols.insert(Symbol(fun_name, TY_FUNC, code.pos()));
+    int funcloc = code.pos();
 
     code.add(I_PROC);
     int patchloc = code.pos(); // to be filled with number of local variables.
@@ -68,6 +68,8 @@ void CodeGen::visitFun(Fun *fun)
     fun->listdecl_->accept(this);
     int startvar = symbols.numvars();
 
+    ArgumentChecker argument_checker(std::string(fun_name), curr_arg_list_types);
+
     // Generate code for function body.
     fun->liststm_->accept(this);
 
@@ -78,6 +80,8 @@ void CodeGen::visitFun(Fun *fun)
     // Return, popping off our parameters.
     code.add(I_ENDPPROC);
     code.add(funargs);
+
+    symbols.insert(Symbol(fun_name, argument_checker, funcloc));
 }
 
 void CodeGen::visitDec(Dec *dec)
@@ -316,15 +320,24 @@ void CodeGen::visitCall(Call *call)
 
     int level = symbols.levelof(currid);
     int addr = symbols[currid]->address();
+    ArgumentChecker *checker = &symbols[currid]->checkr;
 
     // Make room on the stack for the return value.  Assumes all functions
     // will return some value.
     code.add(I_CONSTANT);
     code.add(0);
 
+    // Get from symbol
+    //ArgumentChecker arg_checker;
+
     // Generate code for the expressions (which leaves their values on the
     // stack when executed).
     call->listexp_->accept(this);
+
+    checker->check_args(curr_arg_list_types);
+    if(curr_arg_list_types.size()){
+      printf("%d\n", curr_arg_list_types[0]);
+    }
 
     code.add(I_CALL);
     code.add(level);
@@ -394,6 +407,8 @@ void CodeGen::visitListStm(ListStm* liststm)
 
 void CodeGen::visitListDecl(ListDecl* listdecl)
 {
+    curr_arg_list_types.clear();
+
     // ListDecl is a function parameter list, so we can compute funargs here.
     funargs = listdecl->size();
 
@@ -401,6 +416,7 @@ void CodeGen::visitListDecl(ListDecl* listdecl)
     for (ListDecl::iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
     {
         (*i)->accept(this); // visitDec
+        curr_arg_list_types.push_back(currtype);
 
         // The first argument (currarg = 0) has address -nargs; the last
         // (currarg = nargs - 1) has address -1.
@@ -425,10 +441,13 @@ void CodeGen::visitListIdent(ListIdent* listident)
 
 void CodeGen::visitListExp(ListExp* listexp)
 {
+    curr_arg_list_types.clear();
+
     // Evaluate each expression in turn, leaving all the values on the stack.
     for (ListExp::iterator i = listexp->begin() ; i != listexp->end() ; ++i)
     {
         (*i)->accept(this);
+        curr_arg_list_types.push_back(currtype);
     }
 }
 

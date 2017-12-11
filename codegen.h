@@ -44,6 +44,7 @@ private:
     PstackCode code;     // buffer to hold generated code
     SymbolTable symbols; // symbol table
     int funargs;         // number of parameters in current function.
+    std::vector<type_t> curr_arg_list_types;  // Arg types from last visitListExp
 public:
     CodeGen()
         : currid(""), currtype(TY_BAD), code(), symbols(), funargs(-1)
