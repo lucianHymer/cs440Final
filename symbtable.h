@@ -42,8 +42,9 @@ public:
 class ArgumentChecker{
   public:
     ArgumentChecker();
-    ArgumentChecker(std::string fun_name, std::vector<type_t> arg_types_list);
+    ArgumentChecker(std::vector<type_t> arg_types_list);
     bool check_args(std::vector<type_t> arg_types_list);
+    void set_fun_name(std::string name);
   private:
     bool check_arg(int num, type_t t);
     int num_args;

@@ -68,7 +68,7 @@ void CodeGen::visitFun(Fun *fun)
     fun->listdecl_->accept(this);
     int startvar = symbols.numvars();
 
-    ArgumentChecker argument_checker(std::string(fun_name), curr_arg_list_types);
+    ArgumentChecker argument_checker(curr_arg_list_types);
 
     // Generate code for function body.
     fun->liststm_->accept(this);

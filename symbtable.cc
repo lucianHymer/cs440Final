@@ -5,10 +5,13 @@
 
 using namespace std;
 
-ArgumentChecker::ArgumentChecker(std::string name, std::vector<type_t> arg_types_list){
-  fun_name = name;
+ArgumentChecker::ArgumentChecker(std::vector<type_t> arg_types_list){
   arg_types = arg_types_list;
   num_args = arg_types.size();
+}
+
+void ArgumentChecker::set_fun_name(std::string name){
+  fun_name = name;
 }
 
 ArgumentChecker::ArgumentChecker(){
@@ -29,7 +32,9 @@ Symbol::Symbol(const string &name, type_t type, int address)
 
 Symbol::Symbol(const string &name, ArgumentChecker arg_checker, int address)
 	: nam(name), checkr(arg_checker), addr(address), typ(TY_FUNC)
-{}
+{
+  checkr.set_fun_name(name);
+}
 
 const string &Symbol::name() const
 {
