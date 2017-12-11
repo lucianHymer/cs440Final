@@ -1,0 +1,15 @@
+//simple.cmm 
+//Input: None
+//Output: 2017 
+int main ()
+{
+int i;
+i = 2;
+
+repeat{
+   putn(i);
+   i = i + 1;
+}until ( i > 4 );
+
+return 0;
+}

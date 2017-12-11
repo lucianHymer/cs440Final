@@ -1,27 +1,34 @@
 comment "//" ;
 comment "/*" "*/" ;
 
-Prog. Program  ::= [Function] ;
-Fun.  Function ::= Type Ident "(" [Decl] ")" "{" [Stm] "}" ;
-Dec.  Decl     ::= Type [Ident] ;
+Prog.   Program  ::= [Function] ;
+Global. Function ::= Type Ident ";";
+Fun.    Function ::= Type Ident "(" [Decl] ")" "{" [Stm] "}" ;
+Dec.    Decl     ::= Type [Ident] ;
 
 terminator Function "" ;
 terminator Stm "" ;
 separator  Decl "," ;
 separator  nonempty Ident "," ;
 
-SDecl.   Stm ::= Decl ";"  ;
-SExp.    Stm ::= Exp ";" ;
-SBlock.  Stm ::= "{" [Stm] "}" ;
-SWhile.  Stm ::= "while" "(" Exp ")" Stm ;
-SIf.     Stm ::= "if" "(" Exp ")" Stm ;
-SReturn. Stm ::= "return" Exp  ";" ;
+SDecl.       Stm ::= Decl ";"  ;
+SExp.        Stm ::= Exp ";" ;
+SBlock.      Stm ::= "{" [Stm] "}" ;
+SWhile.      Stm ::= "while" "(" Exp ")" Stm ;
+SRepeat.     Stm ::= "repeat" Stm "until" "(" Exp ")" ";" ;
+SIf.         Stm ::= "if" "(" Exp ")" Stm ;
+SIfThenElse. Stm ::= "if" "(" Exp ")" "then" Stm "else" Stm ;
+SIfThen.     Stm ::= "if" "(" Exp ")" "then" Stm ;
+SFor.        Stm ::= "for" "(" Exp ";" Exp ";" Exp ")" Stm ;
+SForScoped.  Stm ::= "for" "(" Type Ident "=" Exp ";" Exp ";" Exp ")" Stm ;
+SReturn.     Stm ::= "return" Exp  ";" ;
 
 EAss.    Exp  ::= Ident "=" Exp ;
-ELt.     Exp1 ::= Exp2 "<" Exp2 ;
-EAdd.    Exp2 ::= Exp2 "+" Exp3 ;
-ESub.    Exp2 ::= Exp2 "-" Exp3 ;
-EMul.    Exp3 ::= Exp3 "*" Exp4 ;
+ELt.     Exp1 ::= Exp2 "<"  Exp2 ;
+EGt.     Exp1 ::= Exp2 ">"  Exp2 ;
+EAdd.    Exp2 ::= Exp2 "+"  Exp3 ;
+ESub.    Exp2 ::= Exp2 "-"  Exp3 ;
+EMul.    Exp3 ::= Exp3 "*"  Exp4 ;
 Call.    Exp4 ::= Ident "(" [Exp] ")" ;
 EVar.    Exp4 ::= Ident ;
 EStr.    Exp4 ::= String ;

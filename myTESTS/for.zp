@@ -5,15 +5,11 @@ int main ()
 {
 int sum;
 int i;
+
+i = 0;
+
 sum = 2016;
-i = getnum();
 for ( i; i < 3; i = i + 1 ) putn(i);
-if ( sum < 0 ) putn(8);
-if ( sum > 0 ) then putn(7);
-if ( sum < 0 ) then
-  putn(6);
-else
-  putn(3);
 sum = sum + i;
 putn (sum);
 return 0;

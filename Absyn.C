@@ -49,6 +49,53 @@ Prog *Prog::clone() const
 
 
 
+/********************   Global    ********************/
+Global::Global(Type *p1, Ident p2)
+{
+  type_ = p1;
+  ident_ = p2;
+
+}
+
+Global::Global(const Global & other)
+{
+  type_ = other.type_->clone();
+  ident_ = other.ident_;
+
+}
+
+Global &Global::operator=(const Global & other)
+{
+  Global tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void Global::swap(Global & other)
+{
+  std::swap(type_, other.type_);
+  std::swap(ident_, other.ident_);
+
+}
+
+Global::~Global()
+{
+  delete(type_);
+
+}
+
+void Global::accept(Visitor *v)
+{
+  v->visitGlobal(this);
+}
+
+Global *Global::clone() const
+{
+  return new Global(*this);
+}
+
+
+
 /********************   Fun    ********************/
 Fun::Fun(Type *p1, Ident p2, ListDecl *p3, ListStm *p4)
 {
@@ -332,6 +379,54 @@ SWhile *SWhile::clone() const
 
 
 
+/********************   SRepeat    ********************/
+SRepeat::SRepeat(Stm *p1, Exp *p2)
+{
+  stm_ = p1;
+  exp_ = p2;
+
+}
+
+SRepeat::SRepeat(const SRepeat & other)
+{
+  stm_ = other.stm_->clone();
+  exp_ = other.exp_->clone();
+
+}
+
+SRepeat &SRepeat::operator=(const SRepeat & other)
+{
+  SRepeat tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void SRepeat::swap(SRepeat & other)
+{
+  std::swap(stm_, other.stm_);
+  std::swap(exp_, other.exp_);
+
+}
+
+SRepeat::~SRepeat()
+{
+  delete(stm_);
+  delete(exp_);
+
+}
+
+void SRepeat::accept(Visitor *v)
+{
+  v->visitSRepeat(this);
+}
+
+SRepeat *SRepeat::clone() const
+{
+  return new SRepeat(*this);
+}
+
+
+
 /********************   SIf    ********************/
 SIf::SIf(Exp *p1, Stm *p2)
 {
@@ -376,6 +471,225 @@ void SIf::accept(Visitor *v)
 SIf *SIf::clone() const
 {
   return new SIf(*this);
+}
+
+
+
+/********************   SIfThenElse    ********************/
+SIfThenElse::SIfThenElse(Exp *p1, Stm *p2, Stm *p3)
+{
+  exp_ = p1;
+  stm_1 = p2;
+  stm_2 = p3;
+
+}
+
+SIfThenElse::SIfThenElse(const SIfThenElse & other)
+{
+  exp_ = other.exp_->clone();
+  stm_1 = other.stm_1->clone();
+  stm_2 = other.stm_2->clone();
+
+}
+
+SIfThenElse &SIfThenElse::operator=(const SIfThenElse & other)
+{
+  SIfThenElse tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void SIfThenElse::swap(SIfThenElse & other)
+{
+  std::swap(exp_, other.exp_);
+  std::swap(stm_1, other.stm_1);
+  std::swap(stm_2, other.stm_2);
+
+}
+
+SIfThenElse::~SIfThenElse()
+{
+  delete(exp_);
+  delete(stm_1);
+  delete(stm_2);
+
+}
+
+void SIfThenElse::accept(Visitor *v)
+{
+  v->visitSIfThenElse(this);
+}
+
+SIfThenElse *SIfThenElse::clone() const
+{
+  return new SIfThenElse(*this);
+}
+
+
+
+/********************   SIfThen    ********************/
+SIfThen::SIfThen(Exp *p1, Stm *p2)
+{
+  exp_ = p1;
+  stm_ = p2;
+
+}
+
+SIfThen::SIfThen(const SIfThen & other)
+{
+  exp_ = other.exp_->clone();
+  stm_ = other.stm_->clone();
+
+}
+
+SIfThen &SIfThen::operator=(const SIfThen & other)
+{
+  SIfThen tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void SIfThen::swap(SIfThen & other)
+{
+  std::swap(exp_, other.exp_);
+  std::swap(stm_, other.stm_);
+
+}
+
+SIfThen::~SIfThen()
+{
+  delete(exp_);
+  delete(stm_);
+
+}
+
+void SIfThen::accept(Visitor *v)
+{
+  v->visitSIfThen(this);
+}
+
+SIfThen *SIfThen::clone() const
+{
+  return new SIfThen(*this);
+}
+
+
+
+/********************   SFor    ********************/
+SFor::SFor(Exp *p1, Exp *p2, Exp *p3, Stm *p4)
+{
+  exp_1 = p1;
+  exp_2 = p2;
+  exp_3 = p3;
+  stm_ = p4;
+
+}
+
+SFor::SFor(const SFor & other)
+{
+  exp_1 = other.exp_1->clone();
+  exp_2 = other.exp_2->clone();
+  exp_3 = other.exp_3->clone();
+  stm_ = other.stm_->clone();
+
+}
+
+SFor &SFor::operator=(const SFor & other)
+{
+  SFor tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void SFor::swap(SFor & other)
+{
+  std::swap(exp_1, other.exp_1);
+  std::swap(exp_2, other.exp_2);
+  std::swap(exp_3, other.exp_3);
+  std::swap(stm_, other.stm_);
+
+}
+
+SFor::~SFor()
+{
+  delete(exp_1);
+  delete(exp_2);
+  delete(exp_3);
+  delete(stm_);
+
+}
+
+void SFor::accept(Visitor *v)
+{
+  v->visitSFor(this);
+}
+
+SFor *SFor::clone() const
+{
+  return new SFor(*this);
+}
+
+
+
+/********************   SForScoped    ********************/
+SForScoped::SForScoped(Type *p1, Ident p2, Exp *p3, Exp *p4, Exp *p5, Stm *p6)
+{
+  type_ = p1;
+  ident_ = p2;
+  exp_1 = p3;
+  exp_2 = p4;
+  exp_3 = p5;
+  stm_ = p6;
+
+}
+
+SForScoped::SForScoped(const SForScoped & other)
+{
+  type_ = other.type_->clone();
+  ident_ = other.ident_;
+  exp_1 = other.exp_1->clone();
+  exp_2 = other.exp_2->clone();
+  exp_3 = other.exp_3->clone();
+  stm_ = other.stm_->clone();
+
+}
+
+SForScoped &SForScoped::operator=(const SForScoped & other)
+{
+  SForScoped tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void SForScoped::swap(SForScoped & other)
+{
+  std::swap(type_, other.type_);
+  std::swap(ident_, other.ident_);
+  std::swap(exp_1, other.exp_1);
+  std::swap(exp_2, other.exp_2);
+  std::swap(exp_3, other.exp_3);
+  std::swap(stm_, other.stm_);
+
+}
+
+SForScoped::~SForScoped()
+{
+  delete(type_);
+  delete(exp_1);
+  delete(exp_2);
+  delete(exp_3);
+  delete(stm_);
+
+}
+
+void SForScoped::accept(Visitor *v)
+{
+  v->visitSForScoped(this);
+}
+
+SForScoped *SForScoped::clone() const
+{
+  return new SForScoped(*this);
 }
 
 
@@ -515,6 +829,54 @@ void ELt::accept(Visitor *v)
 ELt *ELt::clone() const
 {
   return new ELt(*this);
+}
+
+
+
+/********************   EGt    ********************/
+EGt::EGt(Exp *p1, Exp *p2)
+{
+  exp_1 = p1;
+  exp_2 = p2;
+
+}
+
+EGt::EGt(const EGt & other)
+{
+  exp_1 = other.exp_1->clone();
+  exp_2 = other.exp_2->clone();
+
+}
+
+EGt &EGt::operator=(const EGt & other)
+{
+  EGt tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void EGt::swap(EGt & other)
+{
+  std::swap(exp_1, other.exp_1);
+  std::swap(exp_2, other.exp_2);
+
+}
+
+EGt::~EGt()
+{
+  delete(exp_1);
+  delete(exp_2);
+
+}
+
+void EGt::accept(Visitor *v)
+{
+  v->visitEGt(this);
+}
+
+EGt *EGt::clone() const
+{
+  return new EGt(*this);
 }
 
 

@@ -3,6 +3,8 @@
 #include "codegen.h"
 using namespace std;
 
+extern int global_count_loc;
+
 PstackCode CodeGen::generate(Visitable *vis)
 {
     vis->accept(this);
@@ -35,6 +37,12 @@ void CodeGen::visitProg(Prog *prog)
     code.at(patchloc + 1) = addr;
 
     code.end_prog();
+}
+void CodeGen::visitGlobal(Global *global){
+  global->type_->accept(this);
+  visitIdent(global->ident_); // sets currid
+  symbols.insert(Symbol(currid, currtype, 3 + symbols.numvars()));
+  code.at(global_count_loc) = symbols.numvars();
 }
 
 void CodeGen::visitFun(Fun *fun)
@@ -113,6 +121,19 @@ void CodeGen::visitSWhile(SWhile *swhile)
     code.at(patchloc) = code.pos() - (patchloc - 1);
 }
 
+void CodeGen::visitSRepeat(SRepeat *srepeat)
+{
+    int looploc = code.pos(); // Beginning of code
+
+    srepeat->stm_->accept(this); // Body.
+
+    srepeat->exp_->accept(this); // Test
+    code.add(I_JR_IF_FALSE);  // Jump to the body.
+
+    int offset = looploc - (code.pos() - 1);
+    code.add(offset);
+}
+
 void CodeGen::visitSIf(SIf *sif)
 {
     sif->exp_->accept(this);
@@ -124,17 +145,101 @@ void CodeGen::visitSIf(SIf *sif)
     code.at(patchloc) = code.pos() - (patchloc - 1);
 }
 
+void CodeGen::visitSIfThen(SIfThen *sifthen)
+{
+    sifthen->exp_->accept(this);
+    code.add(I_JR_IF_FALSE);  // Jump past the body.
+    code.add(0);
+    int patchloc = code.pos() - 1;
+
+    sifthen->stm_->accept(this); // Body.
+    code.at(patchloc) = code.pos() - (patchloc - 1);
+}
+
+void CodeGen::visitSIfThenElse(SIfThenElse *sifthenelse)
+{
+    sifthenelse->exp_->accept(this);
+    code.add(I_JR_IF_FALSE);  // Jump past the body.
+    code.add(0);
+    int patchloc = code.pos() - 1;
+
+    sifthenelse->stm_1->accept(this); // Body.
+    code.at(patchloc) = code.pos() - (patchloc - 1);
+    sifthenelse->stm_2->accept(this); // Body.
+}
+
+void CodeGen::visitSFor(SFor *sfor)
+{
+    sfor->exp_1->accept(this);
+    int looploc = code.pos(); // Beginning of test
+    sfor->exp_2->accept(this);
+    code.add(I_JR_IF_FALSE);  // Jump past the body.
+    code.add(0);
+    int patchloc = code.pos() - 1;
+
+    sfor->stm_->accept(this); // Body.
+    sfor->exp_3->accept(this);
+    code.add(I_JR);
+    code.add(looploc - (code.pos() - 1)); // offset to looploc
+    code.at(patchloc) = code.pos() - (patchloc - 1);
+}
+
+void CodeGen::visitSForScoped(SForScoped *sfor){
+    code.add(I_PROC);
+    code.add(1);
+    code.add(code.pos() + 1); // function code starts next
+
+    symbols.enter(); // since parameters are local to the function
+
+    code.add(I_CONSTANT);
+    code.add(0);
+
+    sfor->type_->accept(this);
+    visitIdent(sfor->ident_); // sets currid
+    symbols.insert(Symbol(currid, currtype, -1));
+
+    // Compute the address.
+    code.add(I_VARIABLE);
+    code.add(symbols.levelof(currid));
+    code.add(symbols[currid]->address());
+
+    // One copy of the address for the assignment, one for the result.
+    code.add_dup();
+
+    // Generate code for the value of the RHS.
+    sfor->exp_1->accept(this);
+
+    // Store the value at the computed address.
+    code.add(I_ASSIGN);
+    code.add(1);
+
+    // Dereference the address and return its value.
+    code.add(I_VALUE);
+
+    int looploc = code.pos(); // Beginning of test
+    sfor->exp_2->accept(this);
+    code.add(I_JR_IF_FALSE);  // Jump past the body.
+    code.add(0);
+    int patchloc = code.pos() - 1;
+
+    sfor->stm_->accept(this); // Body.
+    sfor->exp_3->accept(this);
+    code.add(I_JR);
+    code.add(looploc - (code.pos() - 1)); // offset to looploc
+    code.at(patchloc) = code.pos() - (patchloc - 1);
+
+    symbols.leave(); // since parameters are local to the function
+}
+
 void CodeGen::visitSReturn(SReturn *sreturn)
 {
-    // Could avoid the I_SWAP later if we generate code for the
-    // return expression after pushing the return value address.
-    sreturn->exp_->accept(this);
-
     // Store the top of stack (return value) at (bp-funargs)
     code.add(I_VARIABLE);
     code.add(0);
     code.add(-(funargs+1));
-    code.add(I_SWAP);
+
+    sreturn->exp_->accept(this);
+
     code.add(I_ASSIGN);
     code.add(1);
 
@@ -173,6 +278,13 @@ void CodeGen::visitELt(ELt *elt)
     elt->exp_1->accept(this);
     elt->exp_2->accept(this);
     code.add(I_LESS);
+}
+
+void CodeGen::visitEGt(EGt *egt)
+{
+    egt->exp_1->accept(this);
+    egt->exp_2->accept(this);
+    code.add(I_GREATER);
 }
 
 void CodeGen::visitEAdd(EAdd *eadd)

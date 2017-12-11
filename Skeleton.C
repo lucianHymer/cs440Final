@@ -23,6 +23,15 @@ void Skeleton::visitProg(Prog *prog)
 
 }
 
+void Skeleton::visitGlobal(Global *global)
+{
+  /* Code For Global Goes Here */
+
+  global->type_->accept(this);
+  visitIdent(global->ident_);
+
+}
+
 void Skeleton::visitFun(Fun *fun)
 {
   /* Code For Fun Goes Here */
@@ -76,12 +85,64 @@ void Skeleton::visitSWhile(SWhile *swhile)
 
 }
 
+void Skeleton::visitSRepeat(SRepeat *srepeat)
+{
+  /* Code For SRepeat Goes Here */
+
+  srepeat->stm_->accept(this);
+  srepeat->exp_->accept(this);
+
+}
+
 void Skeleton::visitSIf(SIf *sif)
 {
   /* Code For SIf Goes Here */
 
   sif->exp_->accept(this);
   sif->stm_->accept(this);
+
+}
+
+void Skeleton::visitSIfThenElse(SIfThenElse *sifthenelse)
+{
+  /* Code For SIfThenElse Goes Here */
+
+  sifthenelse->exp_->accept(this);
+  sifthenelse->stm_1->accept(this);
+  sifthenelse->stm_2->accept(this);
+
+}
+
+void Skeleton::visitSIfThen(SIfThen *sifthen)
+{
+  /* Code For SIfThen Goes Here */
+
+  sifthen->exp_->accept(this);
+  sifthen->stm_->accept(this);
+
+}
+
+void Skeleton::visitSFor(SFor *sfor)
+{
+  /* Code For SFor Goes Here */
+
+  sfor->exp_1->accept(this);
+  sfor->exp_2->accept(this);
+  sfor->exp_3->accept(this);
+  sfor->stm_->accept(this);
+
+}
+
+void Skeleton::visitSForScoped(SForScoped *sforscoped)
+{
+  /* Code For SForScoped Goes Here */
+
+  sforscoped->type_->accept(this);
+  visitIdent(sforscoped->ident_);
+  sforscoped->exp_1->accept(this);
+  sforscoped->exp_2->accept(this);
+  sforscoped->exp_3->accept(this);
+  sforscoped->stm_->accept(this);
 
 }
 
@@ -108,6 +169,15 @@ void Skeleton::visitELt(ELt *elt)
 
   elt->exp_1->accept(this);
   elt->exp_2->accept(this);
+
+}
+
+void Skeleton::visitEGt(EGt *egt)
+{
+  /* Code For EGt Goes Here */
+
+  egt->exp_1->accept(this);
+  egt->exp_2->accept(this);
 
 }
 

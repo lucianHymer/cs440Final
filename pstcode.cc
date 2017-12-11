@@ -8,6 +8,8 @@
 
 using namespace std;
 
+int global_count_loc = 0;
+
 void PstackCode::add(int op)
 {
 	code.push_back(op);
@@ -38,6 +40,7 @@ void PstackCode::begin_prog()
 	// execution starts at address 1
 	add(0);
 	add(I_PROG);
+  global_count_loc = pos();
 	add(0);
 	add(pos() + 1);
 	add(I_JMP);
@@ -80,15 +83,15 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 	add(1);
 
 
-        // getnum() function added (11/28) 
-        fvsyms.insert(Symbol("getnum", TY_FUNC, pos(), 0));
-        add(I_VARIABLE);
-        add(0);
-        add(-1);
-        add(I_READ);
-        add(1);
-        add(I_ENDPPROC);
-        add(0);
+  // getnum() function added (11/28) 
+  fvsyms.insert(Symbol("getnum", TY_FUNC, pos()));
+  add(I_VARIABLE);
+  add(0);
+  add(-1);
+  add(I_READ);
+  add(1);
+  add(I_ENDPPROC);
+  add(0);
 
 	fvsyms.insert(Symbol("exit", TY_FUNC, pos()));
 	add(I_ENDPROG);

@@ -26,22 +26,28 @@ IDENT [a-zA-Z0-9'_]
 %START YYINITIAL COMMENT CHAR CHARESC CHAREND STRING ESCAPED
 %%
 
-<YYINITIAL>"("      	 return _SYMB_0;
-<YYINITIAL>")"      	 return _SYMB_1;
-<YYINITIAL>"{"      	 return _SYMB_2;
-<YYINITIAL>"}"      	 return _SYMB_3;
-<YYINITIAL>","      	 return _SYMB_4;
-<YYINITIAL>";"      	 return _SYMB_5;
+<YYINITIAL>";"      	 return _SYMB_0;
+<YYINITIAL>"("      	 return _SYMB_1;
+<YYINITIAL>")"      	 return _SYMB_2;
+<YYINITIAL>"{"      	 return _SYMB_3;
+<YYINITIAL>"}"      	 return _SYMB_4;
+<YYINITIAL>","      	 return _SYMB_5;
 <YYINITIAL>"="      	 return _SYMB_6;
 <YYINITIAL>"<"      	 return _SYMB_7;
-<YYINITIAL>"+"      	 return _SYMB_8;
-<YYINITIAL>"-"      	 return _SYMB_9;
-<YYINITIAL>"*"      	 return _SYMB_10;
-<YYINITIAL>"double"      	 return _SYMB_11;
-<YYINITIAL>"if"      	 return _SYMB_12;
-<YYINITIAL>"int"      	 return _SYMB_13;
-<YYINITIAL>"return"      	 return _SYMB_14;
-<YYINITIAL>"while"      	 return _SYMB_15;
+<YYINITIAL>">"      	 return _SYMB_8;
+<YYINITIAL>"+"      	 return _SYMB_9;
+<YYINITIAL>"-"      	 return _SYMB_10;
+<YYINITIAL>"*"      	 return _SYMB_11;
+<YYINITIAL>"double"      	 return _SYMB_12;
+<YYINITIAL>"else"      	 return _SYMB_13;
+<YYINITIAL>"for"      	 return _SYMB_14;
+<YYINITIAL>"if"      	 return _SYMB_15;
+<YYINITIAL>"int"      	 return _SYMB_16;
+<YYINITIAL>"repeat"      	 return _SYMB_17;
+<YYINITIAL>"return"      	 return _SYMB_18;
+<YYINITIAL>"then"      	 return _SYMB_19;
+<YYINITIAL>"until"      	 return _SYMB_20;
+<YYINITIAL>"while"      	 return _SYMB_21;
 
 <YYINITIAL>"//"[^\n]*\n  ++yy_mylinenumber ; 	 /* BNFC single-line comment */;
 <YYINITIAL>"/*"      	 BEGIN COMMENT;

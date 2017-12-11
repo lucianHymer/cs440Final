@@ -1,0 +1,18 @@
+//  Name: zzz-info.zp
+//  Purpose: information
+//  your name and SD [last 5 digits] -- team member #1
+//  your name and SD [last 5 digits] -- team member #2
+//  Expected output: two numbers
+
+int main ()
+{
+  int m1,m2;
+  m1 = // here Enter the last five digits of SID -- first member
+  m2 = // here Enter the last five digits of SID -- second member
+ puts("HERE YOUR NAME -- team member #1"); 
+ putn(m1); 
+ puts("HERE YOUR NAME -- team member #2");
+ putn(m2); 
+ return 0; 
+}
+

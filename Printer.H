@@ -32,6 +32,7 @@ void render(char* s);
   void visitProgram(Program *p); /* abstract class */
   void visitProg(Prog *p);
   void visitFunction(Function *p); /* abstract class */
+  void visitGlobal(Global *p);
   void visitFun(Fun *p);
   void visitDecl(Decl *p); /* abstract class */
   void visitDec(Dec *p);
@@ -44,11 +45,17 @@ void render(char* s);
   void visitSExp(SExp *p);
   void visitSBlock(SBlock *p);
   void visitSWhile(SWhile *p);
+  void visitSRepeat(SRepeat *p);
   void visitSIf(SIf *p);
+  void visitSIfThenElse(SIfThenElse *p);
+  void visitSIfThen(SIfThen *p);
+  void visitSFor(SFor *p);
+  void visitSForScoped(SForScoped *p);
   void visitSReturn(SReturn *p);
   void visitExp(Exp *p); /* abstract class */
   void visitEAss(EAss *p);
   void visitELt(ELt *p);
+  void visitEGt(EGt *p);
   void visitEAdd(EAdd *p);
   void visitESub(ESub *p);
   void visitEMul(EMul *p);
@@ -137,6 +144,7 @@ class ShowAbsyn : public Visitor
   void visitProgram(Program *p); /* abstract class */
   void visitProg(Prog *p);
   void visitFunction(Function *p); /* abstract class */
+  void visitGlobal(Global *p);
   void visitFun(Fun *p);
   void visitDecl(Decl *p); /* abstract class */
   void visitDec(Dec *p);
@@ -149,11 +157,17 @@ class ShowAbsyn : public Visitor
   void visitSExp(SExp *p);
   void visitSBlock(SBlock *p);
   void visitSWhile(SWhile *p);
+  void visitSRepeat(SRepeat *p);
   void visitSIf(SIf *p);
+  void visitSIfThenElse(SIfThenElse *p);
+  void visitSIfThen(SIfThen *p);
+  void visitSFor(SFor *p);
+  void visitSForScoped(SForScoped *p);
   void visitSReturn(SReturn *p);
   void visitExp(Exp *p); /* abstract class */
   void visitEAss(EAss *p);
   void visitELt(ELt *p);
+  void visitEGt(EGt *p);
   void visitEAdd(EAdd *p);
   void visitESub(ESub *p);
   void visitEMul(EMul *p);

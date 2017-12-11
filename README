@@ -1,6 +1,16 @@
+AUTHORS:
+Lucian Hymer
+Jack Kerby
+
+DESCRIPTION:
+This is a compiler for the z-plus language. This is only a demo, demonstrating
+the function of if/then/else, getn(), and basic for-loops.
+
 USAGE:
   # Build both the compiler and pstack:
+  bnfc -cpp_stl -m ./zp.cf
   make
+  make -f Makefile.codegen
 
   # Compile fib.cmm, producing fib.apm:
   ./compiler fib.cmm fib.apm
@@ -10,12 +20,17 @@ USAGE:
   # Execute fib.apm:
   ./pstack/api fib
 
+  # Test with (note that this script
+  # is modified from the original)
+  ./test-zp2pstack-modified.sh myTESTS
+
 BUILT-IN-FUNCTIONS:
   The cmm standard library contains three functions:
 
   exit()      : ends the program immediately
   puts("...") : prints a string (only literal strings are supported)
   putn(num)   : prints an integer (like printf("\t%d\n", num))
+  getnum()    : gets an integer
 
 Note that function calls are not checked for number and type of
 arguments: giving the wrong number is likely to smash the stack.

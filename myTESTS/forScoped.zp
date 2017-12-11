@@ -1,0 +1,16 @@
+//simple.cmm 
+//Input: None
+//Output: 2017 
+int main ()
+{
+  int sum;
+  int i;
+
+  i = 12;
+
+  sum = 2016;
+  for ( int i = 0; i < 3; i = i + 1 ) putn(i);
+  putn (sum);
+  putn (i);
+  return 0;
+}

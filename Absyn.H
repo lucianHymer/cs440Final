@@ -26,16 +26,23 @@ class Stm;
 class Exp;
 class Type;
 class Prog;
+class Global;
 class Fun;
 class Dec;
 class SDecl;
 class SExp;
 class SBlock;
 class SWhile;
+class SRepeat;
 class SIf;
+class SIfThenElse;
+class SIfThen;
+class SFor;
+class SForScoped;
 class SReturn;
 class EAss;
 class ELt;
+class EGt;
 class EAdd;
 class ESub;
 class EMul;
@@ -65,16 +72,23 @@ public:
   virtual void visitExp(Exp *p) = 0;
   virtual void visitType(Type *p) = 0;
   virtual void visitProg(Prog *p) = 0;
+  virtual void visitGlobal(Global *p) = 0;
   virtual void visitFun(Fun *p) = 0;
   virtual void visitDec(Dec *p) = 0;
   virtual void visitSDecl(SDecl *p) = 0;
   virtual void visitSExp(SExp *p) = 0;
   virtual void visitSBlock(SBlock *p) = 0;
   virtual void visitSWhile(SWhile *p) = 0;
+  virtual void visitSRepeat(SRepeat *p) = 0;
   virtual void visitSIf(SIf *p) = 0;
+  virtual void visitSIfThenElse(SIfThenElse *p) = 0;
+  virtual void visitSIfThen(SIfThen *p) = 0;
+  virtual void visitSFor(SFor *p) = 0;
+  virtual void visitSForScoped(SForScoped *p) = 0;
   virtual void visitSReturn(SReturn *p) = 0;
   virtual void visitEAss(EAss *p) = 0;
   virtual void visitELt(ELt *p) = 0;
+  virtual void visitEGt(EGt *p) = 0;
   virtual void visitEAdd(EAdd *p) = 0;
   virtual void visitESub(ESub *p) = 0;
   virtual void visitEMul(EMul *p) = 0;
@@ -169,6 +183,21 @@ public:
   void swap(Prog &);
 };
 
+class Global : public Function
+{
+public:
+  Type *type_;
+  Ident ident_;
+
+  Global(const Global &);
+  Global &operator=(const Global &);
+  Global(Type *p1, Ident p2);
+  ~Global();
+  virtual void accept(Visitor *v);
+  virtual Global *clone() const;
+  void swap(Global &);
+};
+
 class Fun : public Function
 {
 public:
@@ -258,6 +287,21 @@ public:
   void swap(SWhile &);
 };
 
+class SRepeat : public Stm
+{
+public:
+  Stm *stm_;
+  Exp *exp_;
+
+  SRepeat(const SRepeat &);
+  SRepeat &operator=(const SRepeat &);
+  SRepeat(Stm *p1, Exp *p2);
+  ~SRepeat();
+  virtual void accept(Visitor *v);
+  virtual SRepeat *clone() const;
+  void swap(SRepeat &);
+};
+
 class SIf : public Stm
 {
 public:
@@ -271,6 +315,73 @@ public:
   virtual void accept(Visitor *v);
   virtual SIf *clone() const;
   void swap(SIf &);
+};
+
+class SIfThenElse : public Stm
+{
+public:
+  Exp *exp_;
+  Stm *stm_1;
+  Stm *stm_2;
+
+  SIfThenElse(const SIfThenElse &);
+  SIfThenElse &operator=(const SIfThenElse &);
+  SIfThenElse(Exp *p1, Stm *p2, Stm *p3);
+  ~SIfThenElse();
+  virtual void accept(Visitor *v);
+  virtual SIfThenElse *clone() const;
+  void swap(SIfThenElse &);
+};
+
+class SIfThen : public Stm
+{
+public:
+  Exp *exp_;
+  Stm *stm_;
+
+  SIfThen(const SIfThen &);
+  SIfThen &operator=(const SIfThen &);
+  SIfThen(Exp *p1, Stm *p2);
+  ~SIfThen();
+  virtual void accept(Visitor *v);
+  virtual SIfThen *clone() const;
+  void swap(SIfThen &);
+};
+
+class SFor : public Stm
+{
+public:
+  Exp *exp_1;
+  Exp *exp_2;
+  Exp *exp_3;
+  Stm *stm_;
+
+  SFor(const SFor &);
+  SFor &operator=(const SFor &);
+  SFor(Exp *p1, Exp *p2, Exp *p3, Stm *p4);
+  ~SFor();
+  virtual void accept(Visitor *v);
+  virtual SFor *clone() const;
+  void swap(SFor &);
+};
+
+class SForScoped : public Stm
+{
+public:
+  Type *type_;
+  Ident ident_;
+  Exp *exp_1;
+  Exp *exp_2;
+  Exp *exp_3;
+  Stm *stm_;
+
+  SForScoped(const SForScoped &);
+  SForScoped &operator=(const SForScoped &);
+  SForScoped(Type *p1, Ident p2, Exp *p3, Exp *p4, Exp *p5, Stm *p6);
+  ~SForScoped();
+  virtual void accept(Visitor *v);
+  virtual SForScoped *clone() const;
+  void swap(SForScoped &);
 };
 
 class SReturn : public Stm
@@ -315,6 +426,21 @@ public:
   virtual void accept(Visitor *v);
   virtual ELt *clone() const;
   void swap(ELt &);
+};
+
+class EGt : public Exp
+{
+public:
+  Exp *exp_1;
+  Exp *exp_2;
+
+  EGt(const EGt &);
+  EGt &operator=(const EGt &);
+  EGt(Exp *p1, Exp *p2);
+  ~EGt();
+  virtual void accept(Visitor *v);
+  virtual EGt *clone() const;
+  void swap(EGt &);
 };
 
 class EAdd : public Exp

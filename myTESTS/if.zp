@@ -6,8 +6,7 @@ int main ()
 int sum;
 int i;
 sum = 2016;
-i = getnum();
-for ( i; i < 3; i = i + 1 ) putn(i);
+i = 2;
 if ( sum < 0 ) putn(8);
 if ( sum > 0 ) then putn(7);
 if ( sum < 0 ) then

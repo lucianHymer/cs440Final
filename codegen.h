@@ -61,6 +61,7 @@ public:
     void visitType(Type *) {}
 
     void visitProg(Prog *p);
+    void visitGlobal(Global *p);
     void visitFun(Fun *p);
     void visitDec(Dec *p);
     void visitListFunction(ListFunction* p);
@@ -74,12 +75,18 @@ public:
     void visitSExp(SExp *p);
     void visitSBlock(SBlock *p);
     void visitSWhile(SWhile *p);
+    void visitSRepeat(SRepeat *p);
     void visitSIf(SIf *p);
+    void visitSIfThen(SIfThen *p);
+    void visitSIfThenElse(SIfThenElse *p);
+    void visitSFor(SFor *p);
+    void visitSForScoped(SForScoped *p);
     void visitSReturn(SReturn *p);
 
     // Expressions
     void visitEAss(EAss *p);
     void visitELt(ELt *p);
+    void visitEGt(EGt *p);
     void visitEAdd(EAdd *p);
     void visitESub(ESub *p);
     void visitEMul(EMul *p);
