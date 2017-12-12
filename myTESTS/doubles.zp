@@ -9,7 +9,7 @@ int calc_c(){
   return a + b;
 }
 
-int calc_3(int c){
+int calc_3(double c){
   return a + b + c;
 }
 
@@ -25,7 +25,6 @@ int main ()
 
   c = calc_c();
   d = calc_3(4);
-  e = calc_3(5,6);
 
   putn (c);
   return 0;

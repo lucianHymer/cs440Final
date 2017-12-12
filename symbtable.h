@@ -42,9 +42,9 @@ public:
 class ArgumentChecker{
   public:
     ArgumentChecker();
-    ArgumentChecker(std::vector<type_t> arg_types_list);
+    ArgumentChecker(std::string function_name, std::vector<type_t> arg_types_list);
     bool check_args(std::vector<type_t> arg_types_list);
-    void set_fun_name(std::string name);
+    void set_fun_name();
   private:
     bool check_arg(int num, type_t t);
     int num_args;
@@ -57,8 +57,9 @@ class ArgumentChecker{
 class Symbol {
     public:
 	Symbol();
+	~Symbol();
 	Symbol(const std::string &name, type_t type = TY_BAD, int addr = -1);
-  Symbol(const std::string &name, ArgumentChecker checker, int address = -1);
+  Symbol(const std::string &name, std::vector<type_t> expected_arg_types, int address = -1);
 
 	// Accessors
 	virtual const std::string &name() const;
@@ -79,8 +80,9 @@ class Symbol {
 	virtual bool operator<(const Symbol &s) const;
 	virtual bool operator==(const Symbol &s) const;
 	virtual bool operator!=(const Symbol &s) const;
-  ArgumentChecker checkr;
+  virtual bool check_args(std::vector<type_t> arg_types_list);
     private:
+  ArgumentChecker checker;
 	std::string nam;
 	type_t typ;
 	int addr;

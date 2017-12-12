@@ -68,8 +68,6 @@ void CodeGen::visitFun(Fun *fun)
     fun->listdecl_->accept(this);
     int startvar = symbols.numvars();
 
-    ArgumentChecker argument_checker(curr_arg_list_types);
-
     // Generate code for function body.
     fun->liststm_->accept(this);
 
@@ -81,7 +79,7 @@ void CodeGen::visitFun(Fun *fun)
     code.add(I_ENDPPROC);
     code.add(funargs);
 
-    symbols.insert(Symbol(fun_name, argument_checker, funcloc));
+    symbols.insert(Symbol(fun_name, curr_arg_list_types, funcloc));
 }
 
 void CodeGen::visitDec(Dec *dec)
@@ -319,25 +317,19 @@ void CodeGen::visitCall(Call *call)
         throw UnknownFunc(currid);
 
     int level = symbols.levelof(currid);
-    int addr = symbols[currid]->address();
-    ArgumentChecker *checker = &symbols[currid]->checkr;
+    Symbol *function_symbol = symbols[currid];
+    int addr = function_symbol->address();
 
     // Make room on the stack for the return value.  Assumes all functions
     // will return some value.
     code.add(I_CONSTANT);
     code.add(0);
 
-    // Get from symbol
-    //ArgumentChecker arg_checker;
-
     // Generate code for the expressions (which leaves their values on the
     // stack when executed).
     call->listexp_->accept(this);
 
-    checker->check_args(curr_arg_list_types);
-    if(curr_arg_list_types.size()){
-      printf("%d\n", curr_arg_list_types[0]);
-    }
+    function_symbol->check_args(curr_arg_list_types);
 
     code.add(I_CALL);
     code.add(level);

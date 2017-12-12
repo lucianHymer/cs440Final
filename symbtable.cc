@@ -1,17 +1,13 @@
 #include <string>
 #include <list>
 #include "symbtable.h"
-#include "stdio.h"
 
 using namespace std;
 
-ArgumentChecker::ArgumentChecker(std::vector<type_t> arg_types_list){
+ArgumentChecker::ArgumentChecker(std::string function_name, std::vector<type_t> arg_types_list){
+  fun_name  = function_name;
   arg_types = arg_types_list;
-  num_args = arg_types.size();
-}
-
-void ArgumentChecker::set_fun_name(std::string name){
-  fun_name = name;
+  num_args  = arg_types.size();
 }
 
 ArgumentChecker::ArgumentChecker(){
@@ -20,6 +16,7 @@ ArgumentChecker::ArgumentChecker(){
 bool ArgumentChecker::check_args(std::vector<type_t> given_arg_types){
   if(given_arg_types.size() != arg_types.size())
     throw WrongNumberArguments(fun_name, arg_types.size(), given_arg_types.size());
+  // TODO type checking
 }
 
 Symbol::Symbol()
@@ -30,10 +27,14 @@ Symbol::Symbol(const string &name, type_t type, int address)
 	: nam(name), typ(type), addr(address)
 {}
 
-Symbol::Symbol(const string &name, ArgumentChecker arg_checker, int address)
-	: nam(name), checkr(arg_checker), addr(address), typ(TY_FUNC)
+Symbol::Symbol(const string &name, std::vector<type_t> given_arg_types, int address)
+	: nam(name), addr(address), typ(TY_FUNC)
 {
-  checkr.set_fun_name(name);
+  checker = ArgumentChecker(name, given_arg_types);
+}
+
+bool Symbol::check_args(std::vector<type_t> arg_types_list){
+  checker.check_args(arg_types_list);
 }
 
 const string &Symbol::name() const

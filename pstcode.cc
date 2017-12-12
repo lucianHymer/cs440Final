@@ -72,11 +72,9 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 	add(I_ENDPPROC);
 	add(1);
 
-	//fvsyms.insert(Symbol("putn", TY_FUNC, pos()));
   std::vector<type_t> type_list;
   type_list.push_back(TY_INT);
-  ArgumentChecker putn_checker(type_list);
-	fvsyms.insert(Symbol("putn", putn_checker, pos()));
+	fvsyms.insert(Symbol("putn", type_list, pos()));
 	add(I_VARIABLE);
 	add(0);
 	add(-1);
@@ -89,8 +87,7 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 
   // getnum() function added (11/28) 
   type_list.clear();
-  ArgumentChecker getnum_checker(type_list);
-  fvsyms.insert(Symbol("getnum", getnum_checker, pos()));
+  fvsyms.insert(Symbol("getnum", type_list, pos()));
   add(I_VARIABLE);
   add(0);
   add(-1);
@@ -99,7 +96,8 @@ void PstackCode::prolog(SymbolTable &fvsyms)
   add(I_ENDPPROC);
   add(0);
 
-	fvsyms.insert(Symbol("exit", TY_FUNC, pos()));
+  type_list.clear();
+	fvsyms.insert(Symbol("exit", type_list, pos()));
 	add(I_ENDPROG);
 
 	// Patch up the JMP to the beginning of the program proper
