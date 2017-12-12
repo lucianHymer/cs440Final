@@ -1,0 +1,16 @@
+int fib(int i){
+  int retval;
+
+  if (i<2) then
+    retval = 1;
+  else
+    retval = fib(i-1) + fib(i-2);
+
+  return retval;
+}
+
+int main(){
+  putn(fib(3));
+
+  return 0;
+}
