@@ -49,7 +49,9 @@ void PstackCode::begin_prog()
 
 void PstackCode::prolog(SymbolTable &fvsyms)
 {
-	fvsyms.insert(Symbol("puts", TY_FUNC, pos()));
+  std::vector<type_t> type_list;
+  type_list.push_back(TY_STR);
+	fvsyms.insert(Symbol("puts", type_list, pos()));
 	add(I_VARIABLE);
 	add(0);
 	add(-1);
@@ -72,7 +74,7 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 	add(I_ENDPPROC);
 	add(1);
 
-  std::vector<type_t> type_list;
+  type_list.clear();
   type_list.push_back(TY_INT);
 	fvsyms.insert(Symbol("putn", type_list, pos()));
 	add(I_VARIABLE);

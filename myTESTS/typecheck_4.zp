@@ -1,0 +1,22 @@
+//simple.cmm 
+//Input: None
+//Output: 2017 
+
+double a;
+int b;
+
+int calc_c(){
+  return a + itod(b);
+}
+
+
+int main ()
+{
+  a = 2.0;
+  b = 1;
+  int c;
+
+  c = calc_c();
+  putn (c);
+  return 0;
+}

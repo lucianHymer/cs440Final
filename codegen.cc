@@ -56,7 +56,7 @@ void CodeGen::visitFun(Fun *fun)
     if (symbols.exists(fun_name))
         throw Redeclared(fun_name);
 
-    int funcloc = code.pos();
+    symbols.insert(Symbol(fun_name, code.pos()));
 
     code.add(I_PROC);
     int patchloc = code.pos(); // to be filled with number of local variables.
@@ -66,7 +66,9 @@ void CodeGen::visitFun(Fun *fun)
     symbols.enter(); // since parameters are local to the function
     // Adds entries to symbol table, sets funargs
     fun->listfdecl_->accept(this);
-    std::vector<type_t> arg_list_types = curr_arg_list_types;
+
+    symbols[fun_name]->set_function_type_info(curr_arg_list_types, return_type);
+
     int startvar = symbols.numvars();
 
     // Generate code for function body.
@@ -81,7 +83,6 @@ void CodeGen::visitFun(Fun *fun)
     code.add(I_ENDPPROC);
     code.add(funargs);
 
-    symbols.insert(Symbol(fun_name, arg_list_types, funcloc, return_type));
     symbols[fun_name]->check_return(actual_ret_val_type);
 }
 
@@ -476,6 +477,7 @@ void CodeGen::visitEVar(EVar *evar)
 
 void CodeGen::visitEStr(EStr *estr)
 {
+    currtype = TY_STR;
     code.add(I_CONSTANT);
     code.add(0); // must be patched for string address
     visitString(estr->string_);

@@ -47,6 +47,10 @@ Symbol::Symbol(const string &name, type_t type, int address)
 	: nam(name), typ(type), addr(address)
 {}
 
+Symbol::Symbol(const string &name, int address)
+	: nam(name), typ(TY_FUNC), addr(address)
+{}
+
 Symbol::Symbol(const string &name, std::vector<type_t> given_arg_types, int address, type_t ret_val_type)
 	: nam(name), addr(address), typ(TY_FUNC), return_type(ret_val_type)
 {
@@ -59,6 +63,11 @@ bool Symbol::check_args(std::vector<type_t> arg_types_list){
 
 bool Symbol::check_return(type_t given_ret_val_type){
   checker.check_return(given_ret_val_type);
+}
+
+void Symbol::set_function_type_info(std::vector<type_t> expected_arg_types, type_t ret_val_type){
+  checker     = ArgumentChecker(name(), expected_arg_types, ret_val_type);
+  return_type = ret_val_type;
 }
 
 const string &Symbol::name() const

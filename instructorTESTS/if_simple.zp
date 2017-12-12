@@ -7,7 +7,7 @@ int main() {
     b = 2;
 
     if (a < b) {
-        puts("a is less than b");
+        puts("a is less than b\n");
     }
 
     return 0;

@@ -28,7 +28,8 @@ enum type_t {
 	TY_BAD,
 	TY_INT,
 	TY_DOUBLE,
-	TY_FUNC
+	TY_FUNC,
+  TY_STR
 };
 
 std::string type_id_to_str(type_t type_id);
@@ -95,6 +96,9 @@ class Symbol {
 	Symbol();
 	Symbol(const std::string &name, type_t type = TY_BAD, int addr = -1);
   Symbol(const std::string &name, std::vector<type_t> expected_arg_types, int address = -1, type_t ret_val_type = TY_INT);
+  Symbol(const std::string &name, int address = -1);
+
+  virtual void set_function_type_info(std::vector<type_t> expected_arg_types, type_t ret_val_type = TY_INT);
 
 	// Accessors
 	virtual const std::string &name() const;
