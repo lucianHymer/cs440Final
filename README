@@ -22,18 +22,33 @@ USAGE:
 
   # Test with (note that this script
   # is modified from the original)
-  ./test-zp2pstack-modified.sh myTESTS
+  ./test.sh myTESTS
 
 BUILT-IN-FUNCTIONS:
-  The cmm standard library contains three functions:
+  The cmm standard library contains these functions:
 
-  exit()      : ends the program immediately
-  puts("...") : prints a string (only literal strings are supported)
-  putn(num)   : prints an integer (like printf("\t%d\n", num))
-  getnum()    : gets an integer
+  exit()       : ends the program immediately
+  puts("...")  : prints a string (only literal strings are supported)
+  putn(int)    : prints an integer (like printf("\t%d\n", int))
+  putd(double) : prints a double (like printf("\t%d\n", double))
+  getnum()     : gets an integer
+  itod(int)    : returns int as a double
+  dtoi(double) : returns double as an integer
 
-Note that function calls are not checked for number and type of
-arguments: giving the wrong number is likely to smash the stack.
 All functions return a value.
 
-Functions with multiple arguments are not parsed correctly.
+IMPLEMENTED-FEATURES:
+1.  getnum()                       : implemented
+2.  if-then and if-then-else       : implemented
+3.  for loop (simple)              : implemented
+4.  repeat-until                   : implemented
+5.  optimizations                  : implemented
+6.  globals                        : implemented
+7.  for loop (scoped)              : implemented
+8.  check function argument counts : implemented
+9.  doubles and type checking      : implemented
+10. extra features                 : see below
+
+EXTRA-FEATURES:
+itod and dtoi      : Built-in functions to type-cast between ints and doubles
+multiple arguments : Functions work with multiple arguments
