@@ -31,6 +31,8 @@ enum type_t {
 	TY_FUNC
 };
 
+std::string type_id_to_str(type_t type_id);
+
 class WrongNumberArguments : public std::logic_error
 {
 public:
@@ -39,17 +41,51 @@ public:
     {}
 };
 
+class WrongArgumentType : public std::logic_error
+{
+public:
+    WrongArgumentType(std::string name, int arg_num, type_t expected_type, type_t real_type)
+        : logic_error(std::string("Expected ") + name + " argument " + SSTR(arg_num + 1) + " to be of type " + type_id_to_str(expected_type) + ", got " + type_id_to_str(real_type))
+    {}
+};
+
+class WrongReturnType : public std::logic_error
+{
+public:
+    WrongReturnType(std::string name, type_t expected_type, type_t real_type)
+        : logic_error(std::string("Expected return value for ") + name + " to be of type " + type_id_to_str(expected_type) + ", got " + type_id_to_str(real_type))
+    {}
+};
+
+class WrongAssignmentType : public std::logic_error
+{
+public:
+    WrongAssignmentType(std::string name, type_t expected_type, type_t real_type)
+        : logic_error(std::string("Expected ") + name + " to be assigned value of type " + type_id_to_str(expected_type) + ", got " + type_id_to_str(real_type))
+    {}
+};
+
+class MixedTypes : public std::logic_error
+{
+public:
+    MixedTypes(std::string op_name, type_t expected_type, type_t real_type)
+        : logic_error(std::string("Operation '") + op_name + "' cannot mix types " + type_id_to_str(expected_type) + " and " + type_id_to_str(real_type))
+    {}
+};
+
 class ArgumentChecker{
   public:
     ArgumentChecker();
-    ArgumentChecker(std::string function_name, std::vector<type_t> arg_types_list);
+    ArgumentChecker(std::string function_name, std::vector<type_t> arg_types_list, type_t ret_val_type);
     bool check_args(std::vector<type_t> arg_types_list);
+    bool check_return(type_t given_ret_val_type);
     void set_fun_name();
   private:
     bool check_arg(int num, type_t t);
     int num_args;
     std::string fun_name;
     std::vector<type_t> arg_types;
+    type_t return_value_type;
 };
 
 
@@ -57,9 +93,8 @@ class ArgumentChecker{
 class Symbol {
     public:
 	Symbol();
-	~Symbol();
 	Symbol(const std::string &name, type_t type = TY_BAD, int addr = -1);
-  Symbol(const std::string &name, std::vector<type_t> expected_arg_types, int address = -1);
+  Symbol(const std::string &name, std::vector<type_t> expected_arg_types, int address = -1, type_t ret_val_type = TY_INT);
 
 	// Accessors
 	virtual const std::string &name() const;
@@ -81,6 +116,8 @@ class Symbol {
 	virtual bool operator==(const Symbol &s) const;
 	virtual bool operator!=(const Symbol &s) const;
   virtual bool check_args(std::vector<type_t> arg_types_list);
+  virtual bool check_return(type_t given_ret_val_type);
+	type_t return_type;
     private:
   ArgumentChecker checker;
 	std::string nam;

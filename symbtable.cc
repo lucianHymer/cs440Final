@@ -4,10 +4,22 @@
 
 using namespace std;
 
-ArgumentChecker::ArgumentChecker(std::string function_name, std::vector<type_t> arg_types_list){
-  fun_name  = function_name;
-  arg_types = arg_types_list;
-  num_args  = arg_types.size();
+std::string type_id_to_str(type_t type_id){
+  switch(type_id){
+    case TY_INT:
+      return std::string("integer");
+    case TY_DOUBLE:
+      return std::string("double");
+    default:
+      return std::string("unknown");
+  }
+}
+
+ArgumentChecker::ArgumentChecker(std::string function_name, std::vector<type_t> arg_types_list, type_t ret_val_type){
+  fun_name          = function_name;
+  arg_types         = arg_types_list;
+  num_args          = arg_types.size();
+  return_value_type = ret_val_type;
 }
 
 ArgumentChecker::ArgumentChecker(){
@@ -16,7 +28,15 @@ ArgumentChecker::ArgumentChecker(){
 bool ArgumentChecker::check_args(std::vector<type_t> given_arg_types){
   if(given_arg_types.size() != arg_types.size())
     throw WrongNumberArguments(fun_name, arg_types.size(), given_arg_types.size());
-  // TODO type checking
+  for(int arg_num = 0; arg_num < arg_types.size(); arg_num++){
+    if(given_arg_types[0] != arg_types[0])
+      throw WrongArgumentType(fun_name, arg_num, arg_types[arg_num], given_arg_types[arg_num]);
+  }
+}
+
+bool ArgumentChecker::check_return(type_t given_ret_val_type){
+  if(given_ret_val_type != return_value_type)
+    throw WrongReturnType(fun_name, return_value_type, given_ret_val_type);
 }
 
 Symbol::Symbol()
@@ -27,14 +47,18 @@ Symbol::Symbol(const string &name, type_t type, int address)
 	: nam(name), typ(type), addr(address)
 {}
 
-Symbol::Symbol(const string &name, std::vector<type_t> given_arg_types, int address)
-	: nam(name), addr(address), typ(TY_FUNC)
+Symbol::Symbol(const string &name, std::vector<type_t> given_arg_types, int address, type_t ret_val_type)
+	: nam(name), addr(address), typ(TY_FUNC), return_type(ret_val_type)
 {
-  checker = ArgumentChecker(name, given_arg_types);
+  checker = ArgumentChecker(name, given_arg_types, ret_val_type);
 }
 
 bool Symbol::check_args(std::vector<type_t> arg_types_list){
   checker.check_args(arg_types_list);
+}
+
+bool Symbol::check_return(type_t given_ret_val_type){
+  checker.check_return(given_ret_val_type);
 }
 
 const string &Symbol::name() const

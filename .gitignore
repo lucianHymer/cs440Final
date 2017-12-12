@@ -1,3 +1,5 @@
 *.swp
 *.bak
 a.apm
+*.swo
+calc_out.apm

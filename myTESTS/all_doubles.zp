@@ -3,31 +3,32 @@
 //Output: 2017 
 
 double a;
-int b;
+double b;
 
-int calc_c(){
-  return dtoi(a) + b;
+double calc_c(){
+  return a + b;
 }
 
 double calc_3(double c){
-  return a + itod(b) + c;
+  return a + b + c;
 }
 
 
 int main ()
 {
-  int c;
-  int e;
-  double d, f;
+  double c;
+  double d;
+  double e;
+  double f;
 
   a = 2.0;
-  b = 3;
+  b = 3.0;
   f = 4.0;
 
   c = calc_c();
   d = calc_3(f);
 
-  putn (c);
-  putd (d);
+  putd (c);
+  putd (3.0);
   return 0;
 }

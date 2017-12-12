@@ -48,7 +48,7 @@ void CodeGen::visitGlobal(Global *global){
 void CodeGen::visitFun(Fun *fun)
 {
     fun->type_->accept(this);
-    // return type in currtype, but currently ignored (always int)
+    type_t return_type = currtype;
 
     visitIdent(fun->ident_);
     Ident fun_name = currid;
@@ -66,10 +66,12 @@ void CodeGen::visitFun(Fun *fun)
     symbols.enter(); // since parameters are local to the function
     // Adds entries to symbol table, sets funargs
     fun->listdecl_->accept(this);
+    std::vector<type_t> arg_list_types = curr_arg_list_types;
     int startvar = symbols.numvars();
 
     // Generate code for function body.
     fun->liststm_->accept(this);
+    type_t actual_ret_val_type = currtype;
 
     // Fill in number of local variables.
     code.at(patchloc) = symbols.numvars() - startvar;
@@ -79,7 +81,8 @@ void CodeGen::visitFun(Fun *fun)
     code.add(I_ENDPPROC);
     code.add(funargs);
 
-    symbols.insert(Symbol(fun_name, curr_arg_list_types, funcloc));
+    symbols.insert(Symbol(fun_name, arg_list_types, funcloc, return_type));
+    symbols[fun_name]->check_return(actual_ret_val_type);
 }
 
 void CodeGen::visitDec(Dec *dec)
@@ -236,13 +239,23 @@ void CodeGen::visitSForScoped(SForScoped *sfor){
 void CodeGen::visitSReturn(SReturn *sreturn)
 {
     // Store the top of stack (return value) at (bp-funargs)
-    code.add(I_VARIABLE);
+    int patchloc = code.pos();
+    code.add(0);
     code.add(0);
     code.add(-(funargs+1));
 
     sreturn->exp_->accept(this);
 
-    code.add(I_ASSIGN);
+    if(currtype == TY_INT){
+      code.at(patchloc) = I_VARIABLE;
+      code.add(I_ASSIGN);
+    }else if(currtype == TY_DOUBLE){
+      code.at(patchloc) = R_VARIABLE;
+      code.add(R_ASSIGN);
+    }else{
+      throw(string("Unable to return variable type ") + type_id_to_str(currtype));
+    }
+
     code.add(1);
 
     // And return, popping off our parameters.
@@ -256,6 +269,8 @@ void CodeGen::visitEAss(EAss *eass)
     if (!symbols.exists(currid))
         throw UnknownVar(currid);
 
+    Ident variable_ident = currid;
+
     // Compute the address.
     code.add(I_VARIABLE);
     code.add(symbols.levelof(currid));
@@ -267,47 +282,121 @@ void CodeGen::visitEAss(EAss *eass)
     // Generate code for the value of the RHS.
     eass->exp_->accept(this);
 
-    // Store the value at the computed address.
-    code.add(I_ASSIGN);
+    if (symbols[variable_ident]->type() != currtype)
+      throw WrongAssignmentType(variable_ident, symbols[variable_ident]->type(), currtype);
+    else{
+      // Store the value at the computed address.
+      if(symbols[variable_ident]->type() == TY_INT)
+        code.add(I_ASSIGN);
+      else if(symbols[variable_ident]->type() == TY_DOUBLE){
+        code.add(R_ASSIGN);
+      }
+      else
+        throw(string("Unable to assign type " + type_id_to_str(symbols[variable_ident]->type())));
+    }
     code.add(1);
 
     // Dereference the address and return its value.
-    code.add(I_VALUE);
+    if(symbols[variable_ident]->type() == TY_INT){
+      code.add(I_VALUE);
+    }else{
+      code.add(R_VALUE);
+    }
 }
 
 void CodeGen::visitELt(ELt *elt)
 {
     elt->exp_1->accept(this);
+    type_t exp_1_type = currtype;
+
     elt->exp_2->accept(this);
-    code.add(I_LESS);
+    type_t exp_2_type = currtype;
+
+    if(exp_1_type != exp_2_type){
+      throw MixedTypes(string("<"), exp_1_type, exp_2_type);
+    }else{
+      if(exp_1_type == TY_INT)
+        code.add(I_LESS);
+      else{
+        code.add(R_LESS);
+      }
+    }
 }
 
 void CodeGen::visitEGt(EGt *egt)
 {
     egt->exp_1->accept(this);
+    type_t exp_1_type = currtype;
+
     egt->exp_2->accept(this);
-    code.add(I_GREATER);
+    type_t exp_2_type = currtype;
+
+    if(exp_1_type != exp_2_type){
+      throw MixedTypes(string(">"), exp_1_type, exp_2_type);
+    }else{
+      if(exp_1_type == TY_INT)
+        code.add(I_GREATER);
+      else{
+        code.add(R_GREATER);
+      }
+    }
 }
 
 void CodeGen::visitEAdd(EAdd *eadd)
 {
     eadd->exp_1->accept(this);
+    type_t exp_1_type = currtype;
+
     eadd->exp_2->accept(this);
-    code.add(I_ADD);
+    type_t exp_2_type = currtype;
+
+    if(exp_1_type != exp_2_type){
+      throw MixedTypes(string("+"), exp_1_type, exp_2_type);
+    }else{
+      if(exp_1_type == TY_INT)
+        code.add(I_ADD);
+      else{
+        code.add(R_ADD);
+      }
+    }
 }
 
 void CodeGen::visitESub(ESub *esub)
 {
     esub->exp_1->accept(this);
+    type_t exp_1_type = currtype;
+
     esub->exp_2->accept(this);
-    code.add(I_SUBTRACT);
+    type_t exp_2_type = currtype;
+
+    if(exp_1_type != exp_2_type){
+      throw MixedTypes(string(">"), exp_1_type, exp_2_type);
+    }else{
+      if(exp_1_type == TY_INT)
+        code.add(I_SUBTRACT);
+      else{
+        code.add(R_SUBTRACT);
+      }
+    }
 }
 
 void CodeGen::visitEMul(EMul *emul)
 {
     emul->exp_1->accept(this);
+    type_t exp_1_type = currtype;
+
     emul->exp_2->accept(this);
-    code.add(I_MULTIPLY);
+    type_t exp_2_type = currtype;
+
+    if(exp_1_type != exp_2_type){
+      throw MixedTypes(string(">"), exp_1_type, exp_2_type);
+    }else{
+      if(exp_1_type == TY_INT)
+        code.add(I_MULTIPLY);
+      else{
+        code.add(R_MULTIPLY);
+      }
+    }
 }
 
 void CodeGen::visitCall(Call *call)
@@ -322,7 +411,12 @@ void CodeGen::visitCall(Call *call)
 
     // Make room on the stack for the return value.  Assumes all functions
     // will return some value.
-    code.add(I_CONSTANT);
+    if(function_symbol->return_type == TY_DOUBLE){
+      code.add(R_CONSTANT);
+    }else{
+      code.add(I_CONSTANT);
+    }
+
     code.add(0);
 
     // Generate code for the expressions (which leaves their values on the
@@ -334,8 +428,9 @@ void CodeGen::visitCall(Call *call)
     code.add(I_CALL);
     code.add(level);
     code.add(addr);
-    
     // The result, if any, is left on the stack.
+
+    currtype = function_symbol->return_type;
 }
 
 void CodeGen::visitEVar(EVar *evar)
@@ -344,12 +439,25 @@ void CodeGen::visitEVar(EVar *evar)
     if (!symbols.exists(currid))
         throw UnknownVar(currid);
 
+    currtype = symbols[currid]->type();
+
+    if(currtype == TY_DOUBLE){
+      code.add(R_VARIABLE);
+    }else if(currtype == TY_INT){
+      code.add(I_VARIABLE);
+    }else{
+      throw(string("Unable to reference variable type ") + type_id_to_str(currtype));
+    }
     // Compute the address.
-    code.add(I_VARIABLE);
     code.add(symbols.levelof(currid));
     code.add(symbols[currid]->address());
+    
     // Dereference it.
-    code.add(I_VALUE);
+    if(currtype == TY_DOUBLE){
+      code.add(R_VALUE);
+    }else if(currtype == TY_INT){
+      code.add(I_VALUE);
+    }
 }
 
 void CodeGen::visitEStr(EStr *estr)
@@ -362,11 +470,13 @@ void CodeGen::visitEStr(EStr *estr)
 void CodeGen::visitEInt(EInt *eint)
 {
     visitInteger(eint->integer_);
+    currtype = TY_INT;
 }
 
 void CodeGen::visitEDouble(EDouble *edouble)
 {
     visitDouble(edouble->double_);
+    currtype = TY_DOUBLE;
 }
 
 void CodeGen::visitTInt(TInt *)
@@ -458,7 +568,9 @@ void CodeGen::visitChar(Char x)
 
 void CodeGen::visitDouble(Double x)
 {
-    throw Unimplemented("doubles are unimplemented");
+    code.add(R_CONSTANT);
+    code.add(x);
+    code.add(I_TO_R);
 }
 
 void CodeGen::visitString(String x)

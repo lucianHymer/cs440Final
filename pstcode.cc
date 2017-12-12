@@ -84,6 +84,17 @@ void PstackCode::prolog(SymbolTable &fvsyms)
 	add(I_ENDPPROC);
 	add(1);
 
+  type_list.clear();
+  type_list.push_back(TY_DOUBLE);
+	fvsyms.insert(Symbol("putd", type_list, pos()));
+	add(R_VARIABLE);
+	add(0);
+	add(-1);
+	add(R_VALUE);
+	add(R_WRITE);
+	add(1);
+	add(I_ENDPPROC);
+	add(1);
 
   // getnum() function added (11/28) 
   type_list.clear();
@@ -95,6 +106,38 @@ void PstackCode::prolog(SymbolTable &fvsyms)
   add(1);
   add(I_ENDPPROC);
   add(0);
+
+  type_list.clear();
+  type_list.push_back(TY_DOUBLE);
+	fvsyms.insert(Symbol("dtoi", type_list, pos(), TY_INT));
+	add(I_VARIABLE);
+	add(0);
+	add(-2);
+	add(R_VARIABLE);
+	add(0);
+	add(-1);
+	add(R_VALUE);
+	add(R_TO_I);
+  add(I_ASSIGN);
+  add(1);
+  add(I_ENDPPROC);
+  add(1);
+
+  type_list.clear();
+  type_list.push_back(TY_INT);
+	fvsyms.insert(Symbol("itod", type_list, pos(), TY_DOUBLE));
+	add(R_VARIABLE);
+	add(0);
+	add(-2);
+	add(I_VARIABLE);
+	add(0);
+	add(-1);
+	add(I_VALUE);
+	add(I_TO_R);
+  add(R_ASSIGN);
+  add(1);
+  add(I_ENDPPROC);
+  add(1);
 
   type_list.clear();
 	fvsyms.insert(Symbol("exit", type_list, pos()));
