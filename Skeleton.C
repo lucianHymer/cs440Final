@@ -11,6 +11,7 @@
 void Skeleton::visitProgram(Program* t) {} //abstract class
 void Skeleton::visitFunction(Function* t) {} //abstract class
 void Skeleton::visitDecl(Decl* t) {} //abstract class
+void Skeleton::visitFDecl(FDecl* t) {} //abstract class
 void Skeleton::visitStm(Stm* t) {} //abstract class
 void Skeleton::visitExp(Exp* t) {} //abstract class
 void Skeleton::visitType(Type* t) {} //abstract class
@@ -38,7 +39,7 @@ void Skeleton::visitFun(Fun *fun)
 
   fun->type_->accept(this);
   visitIdent(fun->ident_);
-  fun->listdecl_->accept(this);
+  fun->listfdecl_->accept(this);
   fun->liststm_->accept(this);
 
 }
@@ -49,6 +50,15 @@ void Skeleton::visitDec(Dec *dec)
 
   dec->type_->accept(this);
   dec->listident_->accept(this);
+
+}
+
+void Skeleton::visitFDec(FDec *fdec)
+{
+  /* Code For FDec Goes Here */
+
+  fdec->type_->accept(this);
+  visitIdent(fdec->ident_);
 
 }
 
@@ -280,9 +290,9 @@ void Skeleton::visitListStm(ListStm* liststm)
   }
 }
 
-void Skeleton::visitListDecl(ListDecl* listdecl)
+void Skeleton::visitListFDecl(ListFDecl* listfdecl)
 {
-  for (ListDecl::iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
+  for (ListFDecl::iterator i = listfdecl->begin() ; i != listfdecl->end() ; ++i)
   {
     (*i)->accept(this);
   }

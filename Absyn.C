@@ -97,11 +97,11 @@ Global *Global::clone() const
 
 
 /********************   Fun    ********************/
-Fun::Fun(Type *p1, Ident p2, ListDecl *p3, ListStm *p4)
+Fun::Fun(Type *p1, Ident p2, ListFDecl *p3, ListStm *p4)
 {
   type_ = p1;
   ident_ = p2;
-  listdecl_ = p3;
+  listfdecl_ = p3;
   liststm_ = p4;
 
 }
@@ -110,7 +110,7 @@ Fun::Fun(const Fun & other)
 {
   type_ = other.type_->clone();
   ident_ = other.ident_;
-  listdecl_ = other.listdecl_->clone();
+  listfdecl_ = other.listfdecl_->clone();
   liststm_ = other.liststm_->clone();
 
 }
@@ -126,7 +126,7 @@ void Fun::swap(Fun & other)
 {
   std::swap(type_, other.type_);
   std::swap(ident_, other.ident_);
-  std::swap(listdecl_, other.listdecl_);
+  std::swap(listfdecl_, other.listfdecl_);
   std::swap(liststm_, other.liststm_);
 
 }
@@ -134,7 +134,7 @@ void Fun::swap(Fun & other)
 Fun::~Fun()
 {
   delete(type_);
-  delete(listdecl_);
+  delete(listfdecl_);
   delete(liststm_);
 
 }
@@ -195,6 +195,53 @@ void Dec::accept(Visitor *v)
 Dec *Dec::clone() const
 {
   return new Dec(*this);
+}
+
+
+
+/********************   FDec    ********************/
+FDec::FDec(Type *p1, Ident p2)
+{
+  type_ = p1;
+  ident_ = p2;
+
+}
+
+FDec::FDec(const FDec & other)
+{
+  type_ = other.type_->clone();
+  ident_ = other.ident_;
+
+}
+
+FDec &FDec::operator=(const FDec & other)
+{
+  FDec tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void FDec::swap(FDec & other)
+{
+  std::swap(type_, other.type_);
+  std::swap(ident_, other.ident_);
+
+}
+
+FDec::~FDec()
+{
+  delete(type_);
+
+}
+
+void FDec::accept(Visitor *v)
+{
+  v->visitFDec(this);
+}
+
+FDec *FDec::clone() const
+{
+  return new FDec(*this);
 }
 
 
@@ -1353,17 +1400,17 @@ ListStm *ListStm::clone() const
 }
 
 
-/********************   ListDecl    ********************/
+/********************   ListFDecl    ********************/
 
-void ListDecl::accept(Visitor *v)
+void ListFDecl::accept(Visitor *v)
 {
-  v->visitListDecl(this);
+  v->visitListFDecl(this);
 }
 
 
-ListDecl *ListDecl::clone() const
+ListFDecl *ListFDecl::clone() const
 {
-  return new ListDecl(*this);
+  return new ListFDecl(*this);
 }
 
 

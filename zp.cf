@@ -3,12 +3,13 @@ comment "/*" "*/" ;
 
 Prog.   Program  ::= [Function] ;
 Global. Function ::= Type Ident ";";
-Fun.    Function ::= Type Ident "(" [Decl] ")" "{" [Stm] "}" ;
+Fun.    Function ::= Type Ident "(" [FDecl] ")" "{" [Stm] "}" ;
 Dec.    Decl     ::= Type [Ident] ;
+FDec.   FDecl    ::= Type Ident ;
 
 terminator Function "" ;
 terminator Stm "" ;
-separator  Decl "," ;
+separator  FDecl "," ;
 separator  nonempty Ident "," ;
 
 SDecl.       Stm ::= Decl ";"  ;

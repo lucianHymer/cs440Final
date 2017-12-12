@@ -36,9 +36,11 @@ void render(char* s);
   void visitFun(Fun *p);
   void visitDecl(Decl *p); /* abstract class */
   void visitDec(Dec *p);
+  void visitFDecl(FDecl *p); /* abstract class */
+  void visitFDec(FDec *p);
   void visitListFunction(ListFunction* p);
   void visitListStm(ListStm* p);
-  void visitListDecl(ListDecl* p);
+  void visitListFDecl(ListFDecl* p);
   void visitListIdent(ListIdent* p);
   void visitStm(Stm *p); /* abstract class */
   void visitSDecl(SDecl *p);
@@ -148,9 +150,11 @@ class ShowAbsyn : public Visitor
   void visitFun(Fun *p);
   void visitDecl(Decl *p); /* abstract class */
   void visitDec(Dec *p);
+  void visitFDecl(FDecl *p); /* abstract class */
+  void visitFDec(FDec *p);
   void visitListFunction(ListFunction* p);
   void visitListStm(ListStm* p);
-  void visitListDecl(ListDecl* p);
+  void visitListFDecl(ListFDecl* p);
   void visitListIdent(ListIdent* p);
   void visitStm(Stm *p); /* abstract class */
   void visitSDecl(SDecl *p);

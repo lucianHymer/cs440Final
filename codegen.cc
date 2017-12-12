@@ -65,7 +65,7 @@ void CodeGen::visitFun(Fun *fun)
 
     symbols.enter(); // since parameters are local to the function
     // Adds entries to symbol table, sets funargs
-    fun->listdecl_->accept(this);
+    fun->listfdecl_->accept(this);
     std::vector<type_t> arg_list_types = curr_arg_list_types;
     int startvar = symbols.numvars();
 
@@ -89,6 +89,16 @@ void CodeGen::visitDec(Dec *dec)
 {
     dec->type_->accept(this); // sets currtype
     dec->listident_->accept(this); // visitListIdent; uses currtype
+}
+
+void CodeGen::visitFDec(FDec *dec)
+{
+    dec->type_->accept(this); // sets currtype
+    visitIdent(dec->ident_); //visitIdent; uses currtype
+    // First local variable (numvars = funargs) has address 3, etc.
+    // If this ListIdent is actually part of a parameter list, these
+    // addresses will be fixed up by visitListFDecl.
+    symbols.insert(Symbol(currid, currtype, 3 + symbols.numvars() - funargs));
 }
 
 void CodeGen::visitSDecl(SDecl *sdecl)
@@ -353,9 +363,9 @@ void CodeGen::visitEAdd(EAdd *eadd)
     if(exp_1_type != exp_2_type){
       throw MixedTypes(string("+"), exp_1_type, exp_2_type);
     }else{
-      if(exp_1_type == TY_INT)
+      if(exp_1_type == TY_INT){
         code.add(I_ADD);
-      else{
+      }else{
         code.add(R_ADD);
       }
     }
@@ -370,7 +380,7 @@ void CodeGen::visitESub(ESub *esub)
     type_t exp_2_type = currtype;
 
     if(exp_1_type != exp_2_type){
-      throw MixedTypes(string(">"), exp_1_type, exp_2_type);
+      throw MixedTypes(string("-"), exp_1_type, exp_2_type);
     }else{
       if(exp_1_type == TY_INT)
         code.add(I_SUBTRACT);
@@ -389,7 +399,7 @@ void CodeGen::visitEMul(EMul *emul)
     type_t exp_2_type = currtype;
 
     if(exp_1_type != exp_2_type){
-      throw MixedTypes(string(">"), exp_1_type, exp_2_type);
+      throw MixedTypes(string("*"), exp_1_type, exp_2_type);
     }else{
       if(exp_1_type == TY_INT)
         code.add(I_MULTIPLY);
@@ -401,6 +411,9 @@ void CodeGen::visitEMul(EMul *emul)
 
 void CodeGen::visitCall(Call *call)
 {
+    vector<type_t> old_arg_type_list = curr_arg_list_types;
+    curr_arg_list_types.clear();
+
     visitIdent(call->ident_);
     if (!symbols.exists(currid))
         throw UnknownFunc(currid);
@@ -431,6 +444,7 @@ void CodeGen::visitCall(Call *call)
     // The result, if any, is left on the stack.
 
     currtype = function_symbol->return_type;
+    curr_arg_list_types = old_arg_type_list;
 }
 
 void CodeGen::visitEVar(EVar *evar)
@@ -507,15 +521,15 @@ void CodeGen::visitListStm(ListStm* liststm)
     }
 }
 
-void CodeGen::visitListDecl(ListDecl* listdecl)
+void CodeGen::visitListFDecl(ListFDecl* listdecl)
 {
     curr_arg_list_types.clear();
 
-    // ListDecl is a function parameter list, so we can compute funargs here.
+    // ListFDecl is a function parameter list, so we can compute funargs here.
     funargs = listdecl->size();
 
     int currarg = 0;
-    for (ListDecl::iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
+    for (ListFDecl::iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
     {
         (*i)->accept(this); // visitDec
         curr_arg_list_types.push_back(currtype);
@@ -523,6 +537,7 @@ void CodeGen::visitListDecl(ListDecl* listdecl)
         // The first argument (currarg = 0) has address -nargs; the last
         // (currarg = nargs - 1) has address -1.
         symbols[currid]->address() = currarg - funargs;
+        currarg++;
     }
 }
 

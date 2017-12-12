@@ -11,6 +11,7 @@ public:
   void visitProgram(Program* p);
   void visitFunction(Function* p);
   void visitDecl(Decl* p);
+  void visitFDecl(FDecl* p);
   void visitStm(Stm* p);
   void visitExp(Exp* p);
   void visitType(Type* p);
@@ -18,6 +19,7 @@ public:
   void visitGlobal(Global* p);
   void visitFun(Fun* p);
   void visitDec(Dec* p);
+  void visitFDec(FDec* p);
   void visitSDecl(SDecl* p);
   void visitSExp(SExp* p);
   void visitSBlock(SBlock* p);
@@ -44,7 +46,7 @@ public:
   void visitTDouble(TDouble* p);
   void visitListFunction(ListFunction* p);
   void visitListStm(ListStm* p);
-  void visitListDecl(ListDecl* p);
+  void visitListFDecl(ListFDecl* p);
   void visitListIdent(ListIdent* p);
   void visitListExp(ListExp* p);
 

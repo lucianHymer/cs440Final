@@ -1,5 +1,0 @@
-int main(){
-  double a;
-  a = 3.0 + 4.0;
-  putd(a);
-}

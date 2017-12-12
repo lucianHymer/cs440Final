@@ -145,7 +145,7 @@ void PrintAbsyn::visitFun(Fun* p)
   _i_ = 0; p->type_->accept(this);
   visitIdent(p->ident_);
   render('(');
-  if(p->listdecl_) {_i_ = 0; p->listdecl_->accept(this);}  render(')');
+  if(p->listfdecl_) {_i_ = 0; p->listfdecl_->accept(this);}  render(')');
   render('{');
   if(p->liststm_) {_i_ = 0; p->liststm_->accept(this);}  render('}');
 
@@ -168,6 +168,21 @@ void PrintAbsyn::visitDec(Dec* p)
   _i_ = oldi;
 }
 
+void PrintAbsyn::visitFDecl(FDecl*p) {} //abstract class
+
+void PrintAbsyn::visitFDec(FDec* p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  _i_ = 0; p->type_->accept(this);
+  visitIdent(p->ident_);
+
+  if (oldi > 0) render(_R_PAREN);
+
+  _i_ = oldi;
+}
+
 void PrintAbsyn::visitListFunction(ListFunction *listfunction)
 {
   for (ListFunction::const_iterator i = listfunction->begin() ; i != listfunction->end() ; ++i)
@@ -182,12 +197,12 @@ void PrintAbsyn::visitListFunction(ListFunction *listfunction)
     (*i)->accept(this);
     render("");
   }
-}void PrintAbsyn::visitListDecl(ListDecl *listdecl)
+}void PrintAbsyn::visitListFDecl(ListFDecl *listfdecl)
 {
-  for (ListDecl::const_iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
+  for (ListFDecl::const_iterator i = listfdecl->begin() ; i != listfdecl->end() ; ++i)
   {
     (*i)->accept(this);
-    if (i != listdecl->end() - 1) render(',');
+    if (i != listfdecl->end() - 1) render(',');
   }
 }void PrintAbsyn::visitListIdent(ListIdent *listident)
 {
@@ -645,7 +660,7 @@ void ShowAbsyn::visitFun(Fun* p)
   visitIdent(p->ident_);
   bufAppend(' ');
   bufAppend('[');
-  if (p->listdecl_)  p->listdecl_->accept(this);
+  if (p->listfdecl_)  p->listfdecl_->accept(this);
   bufAppend(']');
   bufAppend(' ');
   bufAppend('[');
@@ -670,6 +685,20 @@ void ShowAbsyn::visitDec(Dec* p)
   bufAppend(']');
   bufAppend(')');
 }
+void ShowAbsyn::visitFDecl(FDecl* p) {} //abstract class
+
+void ShowAbsyn::visitFDec(FDec* p)
+{
+  bufAppend('(');
+  bufAppend("FDec");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->type_)  p->type_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  visitIdent(p->ident_);
+  bufAppend(')');
+}
 void ShowAbsyn::visitListFunction(ListFunction *listfunction)
 {
   for (ListFunction::const_iterator i = listfunction->begin() ; i != listfunction->end() ; ++i)
@@ -688,12 +717,12 @@ void ShowAbsyn::visitListStm(ListStm *liststm)
   }
 }
 
-void ShowAbsyn::visitListDecl(ListDecl *listdecl)
+void ShowAbsyn::visitListFDecl(ListFDecl *listfdecl)
 {
-  for (ListDecl::const_iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
+  for (ListFDecl::const_iterator i = listfdecl->begin() ; i != listfdecl->end() ; ++i)
   {
     (*i)->accept(this);
-    if (i != listdecl->end() - 1) bufAppend(", ");
+    if (i != listfdecl->end() - 1) bufAppend(", ");
   }
 }
 

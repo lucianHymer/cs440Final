@@ -1,0 +1,27 @@
+//simple.cmm 
+//Input: None
+//Output: 2017 
+
+int one_arg(int c){
+  return c + 3;
+}
+
+int three_args(int c, int d, int e){
+  return c + d + e;
+}
+
+int two_args(int c, int d){
+  return one_arg(c) + d + three_args(d,1,2);
+}
+
+int main ()
+{
+  int a, b, c;
+
+  a = 4;
+  b = 9;
+  c = two_args(a,b);
+  putn(c);
+  putn(one_arg(2));
+  return 0;
+}

@@ -65,10 +65,12 @@ public:
     void visitGlobal(Global *p);
     void visitFun(Fun *p);
     void visitDec(Dec *p);
+    void visitFDec(FDec *dec);
+    void visitFDecl(FDecl *dec) {};
     void visitListFunction(ListFunction* p);
     void visitListExp(ListExp* p);
     void visitListStm(ListStm* p);
-    void visitListDecl(ListDecl* p);
+    void visitListFDecl(ListFDecl* p);
     void visitListIdent(ListIdent* p);
 
     // Statements

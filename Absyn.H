@@ -22,6 +22,7 @@ typedef std::string Ident;
 class Program;
 class Function;
 class Decl;
+class FDecl;
 class Stm;
 class Exp;
 class Type;
@@ -29,6 +30,7 @@ class Prog;
 class Global;
 class Fun;
 class Dec;
+class FDec;
 class SDecl;
 class SExp;
 class SBlock;
@@ -55,7 +57,7 @@ class TInt;
 class TDouble;
 class ListFunction;
 class ListStm;
-class ListDecl;
+class ListFDecl;
 class ListIdent;
 class ListExp;
 
@@ -68,6 +70,7 @@ public:
   virtual void visitProgram(Program *p) = 0;
   virtual void visitFunction(Function *p) = 0;
   virtual void visitDecl(Decl *p) = 0;
+  virtual void visitFDecl(FDecl *p) = 0;
   virtual void visitStm(Stm *p) = 0;
   virtual void visitExp(Exp *p) = 0;
   virtual void visitType(Type *p) = 0;
@@ -75,6 +78,7 @@ public:
   virtual void visitGlobal(Global *p) = 0;
   virtual void visitFun(Fun *p) = 0;
   virtual void visitDec(Dec *p) = 0;
+  virtual void visitFDec(FDec *p) = 0;
   virtual void visitSDecl(SDecl *p) = 0;
   virtual void visitSExp(SExp *p) = 0;
   virtual void visitSBlock(SBlock *p) = 0;
@@ -101,7 +105,7 @@ public:
   virtual void visitTDouble(TDouble *p) = 0;
   virtual void visitListFunction(ListFunction *p) = 0;
   virtual void visitListStm(ListStm *p) = 0;
-  virtual void visitListDecl(ListDecl *p) = 0;
+  virtual void visitListFDecl(ListFDecl *p) = 0;
   virtual void visitListIdent(ListIdent *p) = 0;
   virtual void visitListExp(ListExp *p) = 0;
 
@@ -143,6 +147,13 @@ class Decl : public Visitable
 {
 public:
   virtual Decl *clone() const = 0;
+
+};
+
+class FDecl : public Visitable
+{
+public:
+  virtual FDecl *clone() const = 0;
 
 };
 
@@ -203,12 +214,12 @@ class Fun : public Function
 public:
   Type *type_;
   Ident ident_;
-  ListDecl *listdecl_;
+  ListFDecl *listfdecl_;
   ListStm *liststm_;
 
   Fun(const Fun &);
   Fun &operator=(const Fun &);
-  Fun(Type *p1, Ident p2, ListDecl *p3, ListStm *p4);
+  Fun(Type *p1, Ident p2, ListFDecl *p3, ListStm *p4);
   ~Fun();
   virtual void accept(Visitor *v);
   virtual Fun *clone() const;
@@ -228,6 +239,21 @@ public:
   virtual void accept(Visitor *v);
   virtual Dec *clone() const;
   void swap(Dec &);
+};
+
+class FDec : public FDecl
+{
+public:
+  Type *type_;
+  Ident ident_;
+
+  FDec(const FDec &);
+  FDec &operator=(const FDec &);
+  FDec(Type *p1, Ident p2);
+  ~FDec();
+  virtual void accept(Visitor *v);
+  virtual FDec *clone() const;
+  void swap(FDec &);
 };
 
 class SDecl : public Stm
@@ -601,11 +627,11 @@ public:
   virtual ListStm *clone() const;
 };
 
-class ListDecl : public Visitable, public std::vector<Decl*>
+class ListFDecl : public Visitable, public std::vector<FDecl*>
 {
 public:
   virtual void accept(Visitor *v);
-  virtual ListDecl *clone() const;
+  virtual ListFDecl *clone() const;
 };
 
 class ListIdent : public Visitable, public std::vector<Ident>

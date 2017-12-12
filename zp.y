@@ -125,6 +125,39 @@ Decl* pDecl(const char *str)
   }
 }
 
+static FDecl* YY_RESULT_FDecl_ = 0;
+FDecl* pFDecl(FILE *inp)
+{
+  yy_mylinenumber = 1;
+  initialize_lexer(inp);
+  if (yyparse())
+  { /* Failure */
+    return 0;
+  }
+  else
+  { /* Success */
+    return YY_RESULT_FDecl_;
+  }
+}
+FDecl* pFDecl(const char *str)
+{
+  YY_BUFFER_STATE buf;
+  int result;
+  yy_mylinenumber = 1;
+  initialize_lexer(0);
+  buf = yy_scan_string(str);
+  result = yyparse();
+  yy_delete_buffer(buf);
+  if (result)
+  { /* Failure */
+    return 0;
+  }
+  else
+  { /* Success */
+    return YY_RESULT_FDecl_;
+  }
+}
+
 static ListFunction* YY_RESULT_ListFunction_ = 0;
 ListFunction* pListFunction(FILE *inp)
 {
@@ -191,8 +224,8 @@ ListStm* pListStm(const char *str)
   }
 }
 
-static ListDecl* YY_RESULT_ListDecl_ = 0;
-ListDecl* pListDecl(FILE *inp)
+static ListFDecl* YY_RESULT_ListFDecl_ = 0;
+ListFDecl* pListFDecl(FILE *inp)
 {
   yy_mylinenumber = 1;
   initialize_lexer(inp);
@@ -202,10 +235,10 @@ ListDecl* pListDecl(FILE *inp)
   }
   else
   { /* Success */
-    return YY_RESULT_ListDecl_;
+    return YY_RESULT_ListFDecl_;
   }
 }
-ListDecl* pListDecl(const char *str)
+ListFDecl* pListFDecl(const char *str)
 {
   YY_BUFFER_STATE buf;
   int result;
@@ -220,7 +253,7 @@ ListDecl* pListDecl(const char *str)
   }
   else
   { /* Success */
-    return YY_RESULT_ListDecl_;
+    return YY_RESULT_ListFDecl_;
   }
 }
 
@@ -402,9 +435,10 @@ Type* pType(const char *str)
   Program* program_;
   Function* function_;
   Decl* decl_;
+  FDecl* fdecl_;
   ListFunction* listfunction_;
   ListStm* liststm_;
-  ListDecl* listdecl_;
+  ListFDecl* listfdecl_;
   ListIdent* listident_;
   Stm* stm_;
   Exp* exp_;
@@ -439,9 +473,10 @@ Type* pType(const char *str)
 %type <program_> Program
 %type <function_> Function
 %type <decl_> Decl
+%type <fdecl_> FDecl
 %type <listfunction_> ListFunction
 %type <liststm_> ListStm
-%type <listdecl_> ListDecl
+%type <listfdecl_> ListFDecl
 %type <listident_> ListIdent
 %type <stm_> Stm
 %type <exp_> Exp
@@ -462,9 +497,11 @@ Type* pType(const char *str)
 Program : ListFunction {  $$ = new Prog($1); YY_RESULT_Program_= $$; } 
 ;
 Function : Type _IDENT_ _SYMB_0 {  $$ = new Global($1, $2); YY_RESULT_Function_= $$; } 
-  | Type _IDENT_ _SYMB_1 ListDecl _SYMB_2 _SYMB_3 ListStm _SYMB_4 {  std::reverse($4->begin(),$4->end()) ;$$ = new Fun($1, $2, $4, $7); YY_RESULT_Function_= $$; }
+  | Type _IDENT_ _SYMB_1 ListFDecl _SYMB_2 _SYMB_3 ListStm _SYMB_4 {  std::reverse($4->begin(),$4->end()) ;$$ = new Fun($1, $2, $4, $7); YY_RESULT_Function_= $$; }
 ;
 Decl : Type ListIdent {  std::reverse($2->begin(),$2->end()) ;$$ = new Dec($1, $2); YY_RESULT_Decl_= $$; } 
+;
+FDecl : Type _IDENT_ {  $$ = new FDec($1, $2); YY_RESULT_FDecl_= $$; } 
 ;
 ListFunction : /* empty */ {  $$ = new ListFunction(); YY_RESULT_ListFunction_= $$; } 
   | ListFunction Function {  $1->push_back($2) ; $$ = $1 ; YY_RESULT_ListFunction_= $$; }
@@ -472,9 +509,9 @@ ListFunction : /* empty */ {  $$ = new ListFunction(); YY_RESULT_ListFunction_= 
 ListStm : /* empty */ {  $$ = new ListStm(); YY_RESULT_ListStm_= $$; } 
   | ListStm Stm {  $1->push_back($2) ; $$ = $1 ; YY_RESULT_ListStm_= $$; }
 ;
-ListDecl : /* empty */ {  $$ = new ListDecl(); YY_RESULT_ListDecl_= $$; } 
-  | Decl {  $$ = new ListDecl() ; $$->push_back($1); YY_RESULT_ListDecl_= $$; }
-  | Decl _SYMB_5 ListDecl {  $3->push_back($1) ; $$ = $3 ; YY_RESULT_ListDecl_= $$; }
+ListFDecl : /* empty */ {  $$ = new ListFDecl(); YY_RESULT_ListFDecl_= $$; } 
+  | FDecl {  $$ = new ListFDecl() ; $$->push_back($1); YY_RESULT_ListFDecl_= $$; }
+  | FDecl _SYMB_5 ListFDecl {  $3->push_back($1) ; $$ = $3 ; YY_RESULT_ListFDecl_= $$; }
 ;
 ListIdent : _IDENT_ {  $$ = new ListIdent() ; $$->push_back($1); YY_RESULT_ListIdent_= $$; } 
   | _IDENT_ _SYMB_5 ListIdent {  $3->push_back($1) ; $$ = $3 ; YY_RESULT_ListIdent_= $$; }
