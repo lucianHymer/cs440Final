@@ -9,7 +9,7 @@ int i;
 i = 0;
 
 sum = 2016;
-for ( i; i < 3; i = i + 1 ) putn(i);
+for ( i < 3; i = i + 1 ) putn(i);
 sum = sum + i;
 putn (sum);
 return 0;

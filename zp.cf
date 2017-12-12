@@ -20,7 +20,7 @@ SRepeat.     Stm ::= "repeat" Stm "until" "(" Exp ")" ";" ;
 SIf.         Stm ::= "if" "(" Exp ")" Stm ;
 SIfThenElse. Stm ::= "if" "(" Exp ")" "then" Stm "else" Stm ;
 SIfThen.     Stm ::= "if" "(" Exp ")" "then" Stm ;
-SFor.        Stm ::= "for" "(" Exp ";" Exp ";" Exp ")" Stm ;
+SFor.        Stm ::= "for" "(" Exp ";" Exp ")" Stm ;
 SForScoped.  Stm ::= "for" "(" Type Ident "=" Exp ";" Exp ";" Exp ")" Stm ;
 SReturn.     Stm ::= "return" Exp  ";" ;
 

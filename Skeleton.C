@@ -138,7 +138,6 @@ void Skeleton::visitSFor(SFor *sfor)
 
   sfor->exp_1->accept(this);
   sfor->exp_2->accept(this);
-  sfor->exp_3->accept(this);
   sfor->stm_->accept(this);
 
 }

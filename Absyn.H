@@ -379,12 +379,11 @@ class SFor : public Stm
 public:
   Exp *exp_1;
   Exp *exp_2;
-  Exp *exp_3;
   Stm *stm_;
 
   SFor(const SFor &);
   SFor &operator=(const SFor &);
-  SFor(Exp *p1, Exp *p2, Exp *p3, Stm *p4);
+  SFor(Exp *p1, Exp *p2, Stm *p3);
   ~SFor();
   virtual void accept(Visitor *v);
   virtual SFor *clone() const;

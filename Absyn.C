@@ -623,12 +623,11 @@ SIfThen *SIfThen::clone() const
 
 
 /********************   SFor    ********************/
-SFor::SFor(Exp *p1, Exp *p2, Exp *p3, Stm *p4)
+SFor::SFor(Exp *p1, Exp *p2, Stm *p3)
 {
   exp_1 = p1;
   exp_2 = p2;
-  exp_3 = p3;
-  stm_ = p4;
+  stm_ = p3;
 
 }
 
@@ -636,7 +635,6 @@ SFor::SFor(const SFor & other)
 {
   exp_1 = other.exp_1->clone();
   exp_2 = other.exp_2->clone();
-  exp_3 = other.exp_3->clone();
   stm_ = other.stm_->clone();
 
 }
@@ -652,7 +650,6 @@ void SFor::swap(SFor & other)
 {
   std::swap(exp_1, other.exp_1);
   std::swap(exp_2, other.exp_2);
-  std::swap(exp_3, other.exp_3);
   std::swap(stm_, other.stm_);
 
 }
@@ -661,7 +658,6 @@ SFor::~SFor()
 {
   delete(exp_1);
   delete(exp_2);
-  delete(exp_3);
   delete(stm_);
 
 }

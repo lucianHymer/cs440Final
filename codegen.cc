@@ -186,15 +186,14 @@ void CodeGen::visitSIfThenElse(SIfThenElse *sifthenelse)
 
 void CodeGen::visitSFor(SFor *sfor)
 {
-    sfor->exp_1->accept(this);
     int looploc = code.pos(); // Beginning of test
-    sfor->exp_2->accept(this);
+    sfor->exp_1->accept(this);
     code.add(I_JR_IF_FALSE);  // Jump past the body.
     code.add(0);
     int patchloc = code.pos() - 1;
 
     sfor->stm_->accept(this); // Body.
-    sfor->exp_3->accept(this);
+    sfor->exp_2->accept(this);
     code.add(I_JR);
     code.add(looploc - (code.pos() - 1)); // offset to looploc
     code.at(patchloc) = code.pos() - (patchloc - 1);

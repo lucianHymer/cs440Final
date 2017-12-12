@@ -348,8 +348,6 @@ void PrintAbsyn::visitSFor(SFor* p)
   _i_ = 0; p->exp_1->accept(this);
   render(';');
   _i_ = 0; p->exp_2->accept(this);
-  render(';');
-  _i_ = 0; p->exp_3->accept(this);
   render(')');
   _i_ = 0; p->stm_->accept(this);
 
@@ -849,8 +847,6 @@ void ShowAbsyn::visitSFor(SFor* p)
   p->exp_1->accept(this);
   bufAppend(' ');
   p->exp_2->accept(this);
-  bufAppend(' ');
-  p->exp_3->accept(this);
   bufAppend(' ');
   bufAppend('[');
   if (p->stm_)  p->stm_->accept(this);

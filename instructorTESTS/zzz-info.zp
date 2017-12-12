@@ -7,11 +7,11 @@
 int main ()
 {
   int m1,m2;
-  m1 = // here Enter the last five digits of SID -- first member
-  m2 = // here Enter the last five digits of SID -- second member
- puts("HERE YOUR NAME -- team member #1"); 
+  m1 = 99340; // here Enter the last five digits of SID -- first member
+  m2 = 93390; // here Enter the last five digits of SID -- second member
+ puts("Lucian Hymer --- team member #1"); 
  putn(m1); 
- puts("HERE YOUR NAME -- team member #2");
+ puts("Jack Kerby -- team member #2");
  putn(m2); 
  return 0; 
 }
