@@ -111,10 +111,6 @@ class Symbol {
 	virtual int &address();
 	virtual int address() const;
 
-	// Accessor and reference accessor for the address
-	//virtual ArgumentChecker &checker();
-	//virtual ArgumentChecker checker() const;
-
 	// Comparison operators
 	virtual bool operator<(const Symbol &s) const;
 	virtual bool operator==(const Symbol &s) const;

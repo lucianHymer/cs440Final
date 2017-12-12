@@ -38,16 +38,20 @@ void CodeGen::visitProg(Prog *prog)
 
     code.end_prog();
 }
+
 void CodeGen::visitGlobal(Global *global){
   global->type_->accept(this);
   visitIdent(global->ident_); // sets currid
+  // Start at 3, beginning of locals
   symbols.insert(Symbol(currid, currtype, 3 + symbols.numvars()));
+  // Set global count in I_PROG call
   code.at(global_count_loc) = symbols.numvars();
 }
 
 void CodeGen::visitFun(Fun *fun)
 {
     fun->type_->accept(this);
+    // Store return type of function
     type_t return_type = currtype;
 
     visitIdent(fun->ident_);
@@ -56,6 +60,7 @@ void CodeGen::visitFun(Fun *fun)
     if (symbols.exists(fun_name))
         throw Redeclared(fun_name);
 
+    // Insert bare function symbol to be added to later
     symbols.insert(Symbol(fun_name, code.pos()));
 
     code.add(I_PROC);
@@ -67,12 +72,14 @@ void CodeGen::visitFun(Fun *fun)
     // Adds entries to symbol table, sets funargs
     fun->listfdecl_->accept(this);
 
+    // Set function type info
     symbols[fun_name]->set_function_type_info(curr_arg_list_types, return_type);
 
     int startvar = symbols.numvars();
 
     // Generate code for function body.
     fun->liststm_->accept(this);
+    // Last value of currtype is the real return value
     type_t actual_ret_val_type = currtype;
 
     // Fill in number of local variables.
@@ -83,6 +90,7 @@ void CodeGen::visitFun(Fun *fun)
     code.add(I_ENDPPROC);
     code.add(funargs);
 
+    // Test that real return value and expected are the same
     symbols[fun_name]->check_return(actual_ret_val_type);
 }
 
@@ -292,6 +300,7 @@ void CodeGen::visitEAss(EAss *eass)
     // Generate code for the value of the RHS.
     eass->exp_->accept(this);
 
+    // Make sure expression and variable type match
     if (symbols[variable_ident]->type() != currtype)
       throw WrongAssignmentType(variable_ident, symbols[variable_ident]->type(), currtype);
     else{
@@ -411,6 +420,7 @@ void CodeGen::visitEMul(EMul *emul)
 
 void CodeGen::visitCall(Call *call)
 {
+    // Store curr_arg_list in case nested function calls
     vector<type_t> old_arg_type_list = curr_arg_list_types;
     curr_arg_list_types.clear();
 
@@ -436,6 +446,7 @@ void CodeGen::visitCall(Call *call)
     // stack when executed).
     call->listexp_->accept(this);
 
+    // Check that expression types match the expected argument types
     function_symbol->check_args(curr_arg_list_types);
 
     code.add(I_CALL);
@@ -443,7 +454,9 @@ void CodeGen::visitCall(Call *call)
     code.add(addr);
     // The result, if any, is left on the stack.
 
+    // Return type of call is return type of called function
     currtype = function_symbol->return_type;
+    // Reset curr_arg_list in case nested function calls
     curr_arg_list_types = old_arg_type_list;
 }
 
@@ -533,6 +546,7 @@ void CodeGen::visitListFDecl(ListFDecl* listdecl)
     for (ListFDecl::iterator i = listdecl->begin() ; i != listdecl->end() ; ++i)
     {
         (*i)->accept(this); // visitDec
+        // Store type of decleration in arg_list_types vector
         curr_arg_list_types.push_back(currtype);
 
         // The first argument (currarg = 0) has address -nargs; the last
@@ -565,6 +579,7 @@ void CodeGen::visitListExp(ListExp* listexp)
     for (ListExp::iterator i = listexp->begin() ; i != listexp->end() ; ++i)
     {
         (*i)->accept(this);
+        // Store type of expression in arg_list_types vector
         curr_arg_list_types.push_back(currtype);
     }
 }
@@ -586,6 +601,7 @@ void CodeGen::visitDouble(Double x)
 {
     code.add(R_CONSTANT);
     code.add(x);
+    // Need to convert to double representation
     code.add(I_TO_R);
 }
 

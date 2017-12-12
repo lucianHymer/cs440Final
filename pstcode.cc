@@ -8,6 +8,8 @@
 
 using namespace std;
 
+// Stack address which holds the count of globals
+// in the I_PROG call
 int global_count_loc = 0;
 
 void PstackCode::add(int op)
@@ -40,6 +42,7 @@ void PstackCode::begin_prog()
 	// execution starts at address 1
 	add(0);
 	add(I_PROG);
+  // Backfill this later
   global_count_loc = pos();
 	add(0);
 	add(pos() + 1);
@@ -49,6 +52,7 @@ void PstackCode::begin_prog()
 
 void PstackCode::prolog(SymbolTable &fvsyms)
 {
+  // Add typechecking to builtins builtins
   std::vector<type_t> type_list;
   type_list.push_back(TY_STR);
 	fvsyms.insert(Symbol("puts", type_list, pos()));
@@ -112,22 +116,29 @@ void PstackCode::prolog(SymbolTable &fvsyms)
   type_list.clear();
   type_list.push_back(TY_DOUBLE);
 	fvsyms.insert(Symbol("dtoi", type_list, pos(), TY_INT));
+  // Push retval address
 	add(I_VARIABLE);
 	add(0);
 	add(-2);
+  // Push argument address
 	add(R_VARIABLE);
 	add(0);
 	add(-1);
+  // Dereference argument
 	add(R_VALUE);
+  // Pop and push as double
 	add(R_TO_I);
+  // Assign value to return address
   add(I_ASSIGN);
   add(1);
+  // End
   add(I_ENDPPROC);
   add(1);
 
   type_list.clear();
   type_list.push_back(TY_INT);
 	fvsyms.insert(Symbol("itod", type_list, pos(), TY_DOUBLE));
+  // See above
 	add(R_VARIABLE);
 	add(0);
 	add(-2);
